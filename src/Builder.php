@@ -20,9 +20,7 @@ class Builder {
 	}
 	
 	public function select( $columns = "" ) {
-		$this->columns =
-			empty( $columns ) ? "*" //if no column passed as param, select all
-				: is_array( $columns ) ? $this->columnize( $columns ) //check if an array of columns was passed(a hack)
+		$this->columns = is_array( $columns ) ? $this->columnize( $columns ) //check if an array of columns was passed(a hack)
 				: $columns;
 		
 		return $this;
@@ -50,12 +48,14 @@ class Builder {
 	public function get( $limit = 500 ) {
 		
 		$table_name = self::$table;
-		$limit      =
-			
-			//call the sql grammar builder
+
+		/* if no column passed as param, select all	 */
+		$columns=empty( $this->columns ) ? "*" : $this->columns;
+		
+		
 		
 		$query = /** @lang text */
-			"SELECT {$this->columns} FROM {$table_name}";
+			"SELECT {$columns} FROM {$table_name}";
 		
 		
 		echo $query;
