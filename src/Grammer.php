@@ -14,6 +14,27 @@ class Grammer {
 	 */
 	protected static function construct(){
 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	}
 	
 }

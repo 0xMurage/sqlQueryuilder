@@ -6,8 +6,12 @@
  * Time: 09:42
  */
 
-require 'config.php';
+namespace QueryBuilder\db;
 
+use PDO;
+use PDOException;
+
+require 'config.php';
 
 class Connect {
 	
