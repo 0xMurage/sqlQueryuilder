@@ -1,0 +1,13 @@
+{
+    "name": "mimidots/query-builder",
+    "description": "Simple SQL Query builder. Worry less about the database conncetions and queries..concnet",
+    "type": "library",
+    "authors": [
+        {
+            "name": "mimidots",
+            "email": "info@mimidots.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
