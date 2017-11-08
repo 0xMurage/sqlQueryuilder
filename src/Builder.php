@@ -79,8 +79,6 @@ class Builder {
 		/* if no column passed as param, select all	 */
 		$columns = empty( $this->columns ) ? "*" : $this->columns;
 		
-		
-		
 		$query = /** @lang text */
 			"SELECT {$columns} FROM {$table_name}";
 		
@@ -92,11 +90,20 @@ class Builder {
 			if(!empty($limit)){
 				$query=$query.' LIMIT '.$limit;
 			}
-			
 		echo $query;
 	}
 	
-	
+	public function all()
+	{
+		$table=self::$table;
+		if(!empty($table)) {
+			$query = "SELECT * FROM {$table}";
+			
+			//execute the query and return the data or error message
+		}
+		
+		//TODO return an error here
+	}
 	/**
 	 * Executes a query
 	 *
@@ -111,5 +118,6 @@ class Builder {
 		}
 	}
 	
+
 	
 }
