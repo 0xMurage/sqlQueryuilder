@@ -5,9 +5,9 @@
  * Date: 29-Oct-17
  * Time: 09:42
  */
-namespace QueryBuilder\db;
+//namespace QueryBuilder\db;
 
-use PDOException;
+//use PDOException;
 
 class Builder {
 	
@@ -24,8 +24,9 @@ class Builder {
 	}
 	
 	public function select( $columns = "" ) {
-		$this->columns = is_array( $columns ) ? $this->columnize( $columns ) //check if an array of columns was passed(a hack)
-				: $columns;
+		//check if an array of columns was passed(a hack)
+		$this->columns = is_array( $columns ) ? $this->columnize( $columns )
+			: $columns;
 		
 		return $this;
 	}
@@ -42,33 +43,21 @@ class Builder {
 	}
 	
 	
-
-	public function where( $objectColumns ) {
-		$this->whereby = $objectColumns;
+	public function where( $column, $operator = "", $value ) {
+		
+		empty( $operator ) ? $this->whereby = $column . ' =' . $value :
+			$this->whereby = $operator . " {$operator} " . $value;
 		
 		return $this;
 	}
 	
-	public function latest(){
-		$this->order="ASC";
-		return $this;
-	}
-	
-	/**
-	 * get a specific value where id= ?
-	 * @param $id
-	 */
-	public function find($id){
-	
-	}
 	
 	public function get( $limit = 500 ) {
 		
 		$table_name = self::$table;
-
-		/* if no column passed as param, select all	 */
-		$columns=empty( $this->columns ) ? "*" : $this->columns;
 		
+		/* if no column passed as param, select all	 */
+		$columns = empty( $this->columns ) ? "*" : $this->columns;
 		
 		
 		$query = /** @lang text */
@@ -78,17 +67,33 @@ class Builder {
 		echo $query;
 	}
 	
+	public function latest() {
+		$this->order = "ASC";
+		
+		return $this;
+	}
+	
+	/**
+	 * get a specific value where id= ?
+	 *
+	 * @param $id
+	 */
+	public function find( $id ) {
+	
+	}
 	
 	/**
 	 * Executes a query
+	 *
 	 * @param $sql
 	 */
-	protected function exec($sql){
-		try{
-			
-		}catch (PDOException $e){
+	protected function exec( $sql ) {
+		try {
+		
+		} catch ( PDOException $e ) {
 		
 		}
 	}
+	
 	
 }
