@@ -15,18 +15,11 @@ require 'config.php';
 
 class Connect {
 	
-	private static $conn = null;
+	private static $conn;
 	
-	/**
-	 * Connect constructor.
-	 */
-	public function __construct() {
-		self::makeConnection();
-	}
-	
-	public static function makeConnection() {
+	protected static function makeConnection() {
 		try {
-			self::$conn = new PDO( "host:mysql=" . host . ':' . port . ';dbname=' . database, username, password );
+			self::$conn = new PDO( "mysql:host=" . host . ':' . port . ';dbname=' . database, username, password );
 			
 			// set the PDO error mode to exception
 			self::$conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
@@ -36,8 +29,14 @@ class Connect {
 		}
 	}
 	
-	protected static function connection() {
-		return self::$conn;
+	
+	/**
+	 * @return mixed
+	 */
+	public static function getConn() {
+		self::makeConnection();
+		PDO:$conn=self::$conn;
+		return $conn;
 	}
 	
 }
