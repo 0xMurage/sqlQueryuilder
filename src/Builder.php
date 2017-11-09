@@ -1,4 +1,7 @@
 <?php
+
+use QueryBuilder\db\Connect;
+
 /**
  * All rights reserved.
  * User: Dread Pirate Roberts
@@ -16,6 +19,8 @@ class Builder {
 	protected $whereby;
 	protected $order;
 	protected $limit;
+	protected $error=[];
+	
 	
 	public static function table( $table ) {
 		//TODO sanitize the table name
@@ -40,7 +45,7 @@ class Builder {
 	 *
 	 * @return string
 	 */
-	public function columnize( array $columns ) {
+	protected function columnize( array $columns ) {
 		//TODO sanitize the columns
 		return implode( ",", array_values( $columns ) );
 	}
@@ -53,6 +58,7 @@ class Builder {
 	public function where($params) {
 		//TODO sanitize the parameters
 		//TODO check if the operator is correct
+		//TODO add functionality for (and ,or) multiple where clauses
 		
 		
 		if(func_num_args()==3){
@@ -90,34 +96,68 @@ class Builder {
 			if(!empty($limit)){
 				$query=$query.' LIMIT '.$limit;
 			}
-		echo $query;
+			return $this->pretty_return(
+				$this->fetch($query)
+			);
 	}
 	
-	public function all()
+	/**
+	 * @return string
+	 */
+	public function all( )
 	{
 		$table=self::$table;
 		if(!empty($table)) {
-			$query = "SELECT * FROM {$table}";
+			$query = /** @lang text */
+				"SELECT * FROM {$table}";
 			
 			//execute the query and return the data or error message
+			return $this->pretty_return(
+				$this->fetch($query)
+			);
+			
 		}
 		
 		//TODO return an error here
 	}
 	/**
-	 * Executes a query
+	 * Executes a query that returns data
 	 *
 	 * @param $sql
 	 */
-	protected function exec( $sql ) {
+	protected function fetch( $sql ) {
 		//TODO sanitize the sql query
 		try {
 		
+			$stm=Connect::getConn()->prepare($sql);
+			$stm->execute();
+			$data=null;
+			// set the resulting array to associative
+			$result = $stm->setFetchMode( PDO::FETCH_ASSOC );
+			foreach ( new RecursiveArrayIterator( $stm->fetchAll() ) as $k => $v ) {
+				$data[] = $v;
+			}
+			
+			 return $data;
+			
 		} catch ( PDOException $e ) {
-		
+			array_push($this->error,
+				$e->getCode(),
+				$e->getMessage()
+			);
+			
 		}
 	}
 	
 
+	
+	protected function pretty_return($data){
+		if(!empty($this->error)){
+			return (json_encode($this->error));
+		}
+		
+		return json_encode($data);
+
+	}
 	
 }
