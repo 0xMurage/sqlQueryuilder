@@ -29,12 +29,23 @@ class Builder {
 		return new static;
 	}
 	
-	public function select( $columns = "" ) {
+	/**
+	 * @param string $columns
+	 *
+	 * @return $this
+	 */
+ 	public function select( $columns = "" ) {
 		//TODO sanitize the columns
-		//check if an array of columns was passed(a hack)
-		$this->columns = is_array( $columns ) ? $this->columnize( $columns )
-			: $columns;
 		
+		//check if columns were passed as individual string parameters
+		
+		if(func_num_args()>1){
+			$this->columns=$this->columnize(func_get_args());
+		}else {
+			//check if a simgle array of columns was passed(a hack)
+			$this->columns = is_array( $columns ) ? $this->columnize( $columns )
+				: $columns;
+		}
 		return $this;
 	}
 	
@@ -147,6 +158,7 @@ class Builder {
 			);
 			
 		}
+		return "error:";
 	}
 	
 
