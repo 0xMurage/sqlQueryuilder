@@ -1,10 +1,24 @@
 <?php
 
-use QueryBuilder\db\Builder;
+require "vendor/autoload.php";
 
-require "src/Builder.php";
 
-Builder::table("customers")
 
-	->get();
 
+$data=Builder::table("customers")
+	->select("address as addd","name")
+       ->get();
+
+
+//$check=Builder::table("customers")
+//	->insert()
+//->into();
+//echo $check;
+
+$s="jacob,juma,lo";
+
+$ys="'".join("','",
+		explode(',',
+			$s)
+	)."'";
+echo $ys;
