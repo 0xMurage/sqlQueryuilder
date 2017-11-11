@@ -8,7 +8,6 @@ use QueryBuilder\db\Connect;
  * Date: 29-Oct-17
  * Time: 09:42
  */
-
 class Builder {
 	
 	protected static $table;
@@ -109,53 +108,6 @@ class Builder {
 			$this->fetch( $query )
 		);
 	}
-
-	/**
-	 * @return string
-	 */
-	public function all() {
-		$table = self::$table;
-		if ( ! empty( $table ) ) {
-			$query = /** @lang text */
-				"SELECT * FROM {$table}";
-			
-			//execute the query and return the data or error message
-			return $this->pretty_return(
-				$this->fetch( $query )
-			);
-			
-		}
-		
-		//TODO return an error here
-	}
-	
-	public function insert($values) {
-		
-		$priginal="";
-		if ( func_num_args() > 1 ) {
-			$this->valu = $this->columnize( func_get_args() );
-		} else {
-			//check if a simgle array of columns was passed(a hack)
-			$this->columns = is_array( $columns ) ? $this->columnize( $columns )
-				: $columns;
-		}
-		
-		return $this;
-		
-	}
-	
-	public function into($columns) {
-		//if columns count does not match values count, throw an error.
-		
-		if ( func_num_args() > 1 ) {
-			$this->columns = $this->columnize( func_get_args() );
-		} else {
-			//check if a simgle array of columns was passed(a hack)
-			$this->columns = is_array( $columns ) ? $this->columnize( $columns )
-				: $columns;
-		}
-		
-	}
 	
 	/**
 	 * @param $data
@@ -202,7 +154,69 @@ class Builder {
 		return "error:";
 	}
 	
-	protected function formatValues($values){
+	/**
+	 * @return string
+	 */
+	public function all() {
+		$table = self::$table;
+		if ( ! empty( $table ) ) {
+			$query = /** @lang text */
+				"SELECT * FROM {$table}";
+			
+			//execute the query and return the data or error message
+			return $this->pretty_return(
+				$this->fetch( $query )
+			);
+			
+		}
+		
+		//TODO return an error here
+	}
+	
+	public function insert( $values ) {
+		// TODO sanitize the values
+		if ( func_num_args() > 1 ) {
+			$this->values = array_merge( $this->values, func_get_args() );
+		} else if ( is_array( $values ) ) {
+			$this->values = $values;
+		} else {
+			//TODO throw an error of unrecognized parameters option
+			throw new Exception();
+		}
+		
+		return $this;
+	}
+	
+	
+	public function into( $columns ) {
+		//if columns count does not match values count, throw an error.
+		
+		$valuesCount    = count( $this->values );
+		$colStringCount = 0;
+		if ( is_string( $columns ) ) {
+			try {
+				$colStringCount = count(
+					explode( ',', $columns )
+				);
+			} catch ( Exception $e ) {
+				//TODO throw invalid characters error
+				throw new Exception( "Unrecognized characters. Please refer to documentation on how to insert.." );
+			}
+		}
+		
+		if ( func_num_args() > 1 && func_num_args() == $valuesCount ) {
+			$this->columns = $this->columnize( func_get_args() );
+		} else if ( is_array( $columns ) && count( $columns ) == $valuesCount ) {
+			$this->columns = $this->columnize( $columns );
+		} else if ( $colStringCount == $valuesCount ) {
+			$this->columns = $columns;
+		}
+		
+		//throw an error (columns count not equal to values count)
+		
+	}
+	
+	protected function formatValues( $values ) {
 		//TODO : sanitize the data
 		
 	}
