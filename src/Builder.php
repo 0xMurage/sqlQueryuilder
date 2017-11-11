@@ -12,7 +12,7 @@ class Builder {
 	
 	protected static $table;
 	protected $columns;
-	protected $values;
+	protected $values=[];
 	protected $whereby;
 	protected $order;
 	protected $limit;
@@ -175,7 +175,7 @@ class Builder {
 	
 	public function insert( $values ) {
 		// TODO sanitize the values
-		if ( func_num_args() > 1 ) {
+		if ( func_num_args() > 0 && !is_array($values) ) {
 			$this->values = array_merge( $this->values, func_get_args() );
 		} else if ( is_array( $values ) ) {
 			$this->values = $values;
@@ -215,7 +215,13 @@ class Builder {
 			//throw an error (columns count not equal to values count)
 			throw new Exception("Columns count does not equal values count");
 		}
+		$sql= /** @lang sql */
+			'INSERT INTO ' . self::$table .
+			' (' .
+			implode(',',$this->columns) .
+			') VALUES('.implode(',',$this->values).')';
 		
+			return $sql;
 	}
 	
 	protected function formatValues( $values ) {

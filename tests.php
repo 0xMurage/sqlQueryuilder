@@ -11,17 +11,11 @@ $data=Builder::table("customers")
 	->select("address as addd","name")
        ->get();
 
-echo $data;
-//$check=Builder::table("customers")
-//	->insert()
-//->into();
-//echo $check;
+//echo $data;
+$check=Builder::table("customers")
+	->insert("martin")
+->into("firstname");
+echo $check;
 
-$s="jacob,juma,lo";
-
-$ys="'".join("','",
-		explode(',',
-			$s)
-	)."'";
 
 	
