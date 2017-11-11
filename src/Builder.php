@@ -211,8 +211,10 @@ class Builder {
 		} else if ( $colStringCount == $valuesCount ) {
 			$this->columns = $columns;
 		}
-		
-		//throw an error (columns count not equal to values count)
+		else {
+			//throw an error (columns count not equal to values count)
+			throw new Exception("Columns count does not equal values count");
+		}
 		
 	}
 	
