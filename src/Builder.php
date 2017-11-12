@@ -224,10 +224,17 @@ class Builder {
 	}
 	
 	public function truncate(){
-	
+	//todo validate the table name
+		
+		$sql="TRUNCATE TABLE ".self::$table;
+		
 	}
 	
 	protected function doInsert(){
+	
+	}
+	
+	protected function exec(){
 	
 	}
 	protected function formatValues( $values ) {
