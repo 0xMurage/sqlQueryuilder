@@ -12,7 +12,7 @@ class Builder {
 	
 	protected static $table;
 	protected $columns;
-	protected $values=[];
+	protected $values = [];
 	protected $whereby;
 	protected $order;
 	protected $limit;
@@ -175,7 +175,7 @@ class Builder {
 	
 	public function insert( $values ) {
 		// TODO sanitize the values
-		if ( func_num_args() > 0 && !is_array($values) ) {
+		if ( func_num_args() > 0 && ! is_array( $values ) ) {
 			$this->values = array_merge( $this->values, func_get_args() );
 		} else if ( is_array( $values ) ) {
 			$this->values = $values;
@@ -210,33 +210,62 @@ class Builder {
 			$this->columns = $this->columnize( $columns );
 		} else if ( $colStringCount == $valuesCount ) {
 			$this->columns = $columns;
-		}
-		else {
+		} else {
 			//throw an error (columns count not equal to values count)
-			throw new Exception("Columns count does not equal values count");
+			throw new Exception( "Columns count does not equal values count" );
 		}
-		$sql= /** @lang sql */
+		
+		return $this->doInsert();
+	}
+	
+	protected function doInsert() {
+		//convert each columns to ? parameter
+		$columnParam = array_map( function () {
+			return '?';
+		}, $this->values );
+		
+		
+		$sql = /** @lang sql */
 			'INSERT INTO ' . self::$table .
-			' (' .$this->columns.
-			') VALUES('.implode(',',$this->values).')';
+			' (' . $this->columns .
+			') VALUES(' . implode( ',', $columnParam ) . ')';
+		$stm = Connect::getConn()->prepare( $sql );
 		
-			return $sql;
-	}
-	
-	public function truncate(){
-	//todo validate the table name
+		$stm->bindParam(
+			implode( ',', $columnParam ),
+			implode( ',', $this->values )
+		);
+		$stm->execute();
 		
-		$sql="TRUNCATE TABLE ".self::$table;
+		return "record inserted successfully";
+	}
+	
+	public function truncate() {
+		//todo validate the table name
+		
+		$sql = "TRUNCATE TABLE " . self::$table;
+		$this->exec( $sql );
 		
 	}
 	
-	protected function doInsert(){
-	
+	/**
+	 * Executes a query that does not return any results
+	 *
+	 * @param $query
+	 */
+	protected function exec( $query ) {
+		Connect::getConn()->exec( $query );
 	}
 	
-	protected function exec(){
-	
+	public function drop() {
+		//todo validate the table name
+		
+		$sql = /** @lang text */
+			"DROP TABLE " . self::$table;
+		$this->exec( $sql );
+		
 	}
+	
 	protected function formatValues( $values ) {
 		//TODO : sanitize the data
 		

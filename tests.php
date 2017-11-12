@@ -1,5 +1,4 @@
 <?php
-
 require "vendor/autoload.php";
 
 header('Access-Control-Allow-Origin: *');
@@ -11,12 +10,9 @@ $data=Builder::table("customers")
 	->select("address as addd","name")
        ->get();
 
+
 //echo $data;
-$check=Builder::table("customers")
-	->insert("martin",0)
-->into("firstname","");
+$check=Builder::table("test")
+	->insert("martin murage",'Hungary',"Texas","NY",7886)
+->into("name","address","city","state","zip");
 echo $check;
-echo empty("");
-
-
-	
