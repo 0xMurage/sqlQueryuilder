@@ -13,9 +13,10 @@ $data=Builder::table("customers")
 
 //echo $data;
 $check=Builder::table("customers")
-	->insert("martin")
-->into("firstname");
+	->insert("martin",0)
+->into("firstname","");
 echo $check;
+echo empty("");
 
 
 	

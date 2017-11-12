@@ -217,13 +217,19 @@ class Builder {
 		}
 		$sql= /** @lang sql */
 			'INSERT INTO ' . self::$table .
-			' (' .
-			implode(',',$this->columns) .
+			' (' .$this->columns.
 			') VALUES('.implode(',',$this->values).')';
 		
 			return $sql;
 	}
 	
+	public function truncate(){
+	
+	}
+	
+	protected function doInsert(){
+	
+	}
 	protected function formatValues( $values ) {
 		//TODO : sanitize the data
 		
