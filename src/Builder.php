@@ -231,11 +231,7 @@ class Builder {
 			') VALUES(' . implode( ',', $columnParam ) . ')';
 		$stm = Connect::getConn()->prepare( $sql );
 		
-		$stm->bindParam(
-			implode( ',', $columnParam ),
-			implode( ',', $this->values )
-		);
-		$stm->execute();
+		$stm->execute($this->values);
 		
 		return "record inserted successfully";
 	}
