@@ -96,6 +96,7 @@ class Builder {
 			"SELECT {$columns} FROM {$table_name}";
 		
 		if ( ! empty( $this->whereby ) ) {
+			
 			$query = $query . ' WHERE ' . $this->whereby;
 		}
 		
@@ -218,6 +219,10 @@ class Builder {
 		return $this->doInsert();
 	}
 	
+	/**
+	 * Perform the actusl database insert
+	 * @return string
+	 */
 	protected function doInsert() {
 		//convert each columns to ? parameter
 		$columnParam = array_map( function () {

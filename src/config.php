@@ -8,7 +8,7 @@
 
 define( "host", "localhost" );
 define( "port", "3306" );
-define( "database", "store" );
+define( "database", "opencart" );
 define( "username", "root" );
 define( "password", "" );
 
