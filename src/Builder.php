@@ -79,6 +79,12 @@ class Builder {
 			$this->whereby = func_get_arg( 0 ) . ' = \''
 			                 . func_get_arg( 1 ) . '\'';
 		}
+		else{
+			$this->response["error"]=true;
+			$this->response["message"]="Invalid parameters given in where function";
+			echo json_encode($this->response);
+			return;
+		}
 		
 		//TODO: else return an error of invalid parameters
 		
@@ -117,10 +123,9 @@ class Builder {
 	 * @return string
 	 */
 	protected function pretty_return( $data ) {
-		if ( ! empty( $this->error ) ) {
-			return ( json_encode( $this->error ) );
+		if($this->response["error"]!=false){
+			return json_encode($this->response);
 		}
-		
 		return json_encode( $data );
 		
 	}
@@ -133,9 +138,22 @@ class Builder {
 	protected function fetch( $sql ) {
 		//TODO sanitize the sql query
 		try {
-			
-			$stm = Connect::getConn()->prepare( $sql );
-			$stm->execute();
+			try {
+				$stm = Connect::getConn()->prepare( $sql );
+			}catch (Exception $e){
+				$this->response["error"]=true;
+				$this->response["message"]=$e->getMessage();
+				echo json_encode($this->response);
+				return;
+			}
+			try {
+				$stm->execute();
+			}catch (Exception $e){
+				$this->response["error"]=true;
+				$this->response["message"]=$e->getMessage();
+				echo json_encode($this->response);
+				return;
+			}
 			$data = null;
 			// set the resulting array to associative
 			$result = $stm->setFetchMode( PDO::FETCH_ASSOC );
@@ -213,21 +231,29 @@ class Builder {
 				
 				$this->response["error"]   = true;
 				$this->response["message"] = "Unrecognized characters. Please refer to documentation on how to insert..";
-				echo $this->response;
+				echo json_encode( $this->response );
+				
 				return;
-			
+				
 			}
 		}
-		
-		if ( func_num_args() > 1 && func_num_args() == $valuesCount ) {
-			$this->columns = $this->columnize( func_get_args() );
-		} else if ( is_array( $columns ) && count( $columns ) == $valuesCount ) {
-			$this->columns = $this->columnize( $columns );
-		} else if ( $colStringCount == $valuesCount ) {
-			$this->columns = $columns;
-		} else {
-			//throw an error (columns count not equal to values count)
-			throw new Exception( "Columns count does not equal values count" );
+		try {
+			if ( func_num_args() > 1 && func_num_args() == $valuesCount ) {
+				$this->columns = $this->columnize( func_get_args() );
+			} else if ( is_array( $columns ) && count( $columns ) == $valuesCount ) {
+				$this->columns = $this->columnize( $columns );
+			} else if ( $colStringCount == $valuesCount ) {
+				$this->columns = $columns;
+			} else {
+				//throw an error (columns count not equal to values count)
+				throw new Exception( "Columns count does not equal values count" );
+			}
+		} catch ( Exception $e ) {
+			$this->response["error"]   = true;
+			$this->response["message"] = $e->getMessage();
+			echo json_encode( $this->response );
+			
+			return;
 		}
 		
 		return $this->doInsert();
@@ -248,19 +274,48 @@ class Builder {
 			'INSERT INTO ' . self::$table .
 			' (' . $this->columns .
 			') VALUES(' . implode( ',', $columnParam ) . ')';
-		$stm = Connect::getConn()->prepare( $sql );
+			
+			try {
+				$stm = Connect::getConn()->prepare( $sql );
+			}catch (Exception $e){
+				$this->response["error"]=true;
+				$this->response["message"]=$e->getMessage();
+				echo json_encode($this->response);
+				return;
+			}
 		
-		$stm->execute( $this->values );
-		
-		return "record inserted successfully";
+		try {
+			$stm->execute( $this->values );
+			
+			$this->response["error"]   = false;
+			$this->response["message"] = "Record insert successfully";
+			
+			return json_encode( $this->response );
+		}catch (Exception $e){
+			$this->response["error"]=true;
+			$this->response["message"]=$e->getMessage();
+			echo json_encode($this->response);
+			return;
+		}
 	}
 	
 	public function truncate() {
 		//todo validate the table name
 		
 		$sql = "TRUNCATE TABLE " . self::$table;
-		$this->exec( $sql );
-		
+		try {
+			$this->exec( $sql );
+			
+			$this->response["error"]   = false;
+			$this->response["message"] = "Table truncated successfully";
+			
+			return json_encode( $this->response );
+		} catch ( Exception $e ) {
+			$this->response["error"]   = true;
+			$this->response["message"] = $e->getMessage();
+			
+			return json_encode( $this->response );
+		}
 	}
 	
 	/**
@@ -269,7 +324,15 @@ class Builder {
 	 * @param $query
 	 */
 	protected function exec( $query ) {
-		Connect::getConn()->exec( $query );
+		try {
+			Connect::getConn()->exec( $query );
+		} catch ( Exception $e ) {
+			$this->response["error"]   = true;
+			$this->response["message"] = $e->getMessage();
+			echo json_encode( $this->response );
+			
+			return;
+		}
 	}
 	
 	public function drop() {
