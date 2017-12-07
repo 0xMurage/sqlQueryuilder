@@ -177,9 +177,16 @@ class Builder {
 	public function insert( $values ) {
 		// TODO sanitize the values
 		if ( func_num_args() > 0 && ! is_array( $values ) ) {
-			$this->values = array_merge( $this->values, func_get_args() );
+			$this->values = array_merge( $this->values,
+				array_map(function ($arg){
+					return "'".$arg."'";
+				}
+					,func_get_args()) );
 		} else if ( is_array( $values ) ) {
-			$this->values = $values;
+			$this->values =array_map(function ($arg){
+				return "'".$arg."'";
+			}
+				,$values);
 		} else {
 			//TODO throw an error of unrecognized parameters option
 			throw new Exception();
