@@ -16,7 +16,8 @@ class Builder {
 	protected $whereby;
 	protected $order;
 	protected $limit;
-	protected $error = [];
+	
+	protected $response = array( "error" => false );
 	
 	
 	public static function table( $table ) {
@@ -73,10 +74,10 @@ class Builder {
 		if ( func_num_args() == 3 ) {
 			$this->whereby = func_get_arg( 0 ) . ''
 			                 . func_get_arg( 1 ) . '\''
-			                 . func_get_arg( 2 .'\'');
+			                 . func_get_arg( 2 . '\'' );
 		} else if ( func_num_args() == 2 ) {
 			$this->whereby = func_get_arg( 0 ) . ' = \''
-			                 . func_get_arg( 1 ).'\'';
+			                 . func_get_arg( 1 ) . '\'';
 		}
 		
 		//TODO: else return an error of invalid parameters
@@ -176,13 +177,21 @@ class Builder {
 	
 	public function insert( $values ) {
 		// TODO sanitize the values
-		if ( func_num_args() > 0 && ! is_array( $values ) ) {
-			$this->values = array_merge( $this->values,func_get_args() );
-		} else if ( is_array( $values ) ) {
-			$this->values =$values;
-		} else {
-			//TODO throw an error of unrecognized parameters option
-			throw new Exception();
+		try {
+			if ( func_num_args() > 0 && ! is_array( $values ) ) {
+				$this->values = array_merge( $this->values, func_get_args() );
+			} else if ( is_array( $values ) ) {
+				$this->values = $values;
+			} else {
+				//TODO throw an error of unrecognized parameters option
+				throw new Exception( "unrecognized parameter options in the insert values" );
+			}
+		} catch ( Exception $e ) {
+			$this->response["error"]   = true;
+			$this->response["message"] = $e->getMessage();
+			echo $this->response;
+			
+			return;
 		}
 		
 		return $this;
@@ -201,7 +210,12 @@ class Builder {
 				);
 			} catch ( Exception $e ) {
 				//TODO throw invalid characters error
-				throw new Exception( "Unrecognized characters. Please refer to documentation on how to insert.." );
+				
+				$this->response["error"]   = true;
+				$this->response["message"] = "Unrecognized characters. Please refer to documentation on how to insert..";
+				echo $this->response;
+				return;
+			
 			}
 		}
 		
@@ -236,7 +250,7 @@ class Builder {
 			') VALUES(' . implode( ',', $columnParam ) . ')';
 		$stm = Connect::getConn()->prepare( $sql );
 		
-		$stm->execute($this->values);
+		$stm->execute( $this->values );
 		
 		return "record inserted successfully";
 	}
