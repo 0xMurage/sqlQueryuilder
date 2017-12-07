@@ -72,11 +72,11 @@ class Builder {
 		
 		if ( func_num_args() == 3 ) {
 			$this->whereby = func_get_arg( 0 ) . ''
-			                 . func_get_arg( 1 ) . ''
-			                 . func_get_arg( 2 );
+			                 . func_get_arg( 1 ) . '\''
+			                 . func_get_arg( 2 .'\'');
 		} else if ( func_num_args() == 2 ) {
-			$this->whereby = func_get_arg( 0 ) . ' = '
-			                 . func_get_arg( 1 );
+			$this->whereby = func_get_arg( 0 ) . ' = \''
+			                 . func_get_arg( 1 ).'\'';
 		}
 		
 		//TODO: else return an error of invalid parameters
