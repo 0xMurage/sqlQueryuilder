@@ -70,7 +70,6 @@ class Builder {
 	 */
 	public function where( $params ) {
 		//TODO sanitize the parameters
-		//TODO check if the operator is correct
 		//TODO add functionality for (and ,or) multiple where clauses
 		
 		if ( func_num_args() == 3 ) {
@@ -234,7 +233,6 @@ class Builder {
 			} else if ( is_array( $values ) ) {
 				$this->values = $values;
 			} else {
-				//TODO throw an error of unrecognized parameters option
 				throw new Exception( "unrecognized parameter options in the insert values" );
 			}
 		} catch ( Exception $e ) {
