@@ -1,4 +1,4 @@
-#**Installation**
+# **Installation**
 To include the library in an existing project using [composer](https://getcomposer.org/)
     
     composer require murage/sqlddl
@@ -21,7 +21,7 @@ This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) a
   `DB_USERNAME`=your database username 
   
   `DB_PASSWORD`=your database password
-#**Usages**
+# **Usages**
 
 Every query starts with 
 
