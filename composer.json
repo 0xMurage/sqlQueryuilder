@@ -10,7 +10,8 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "vlucas/phpdotenv": "^2.5@dev"
+        "vlucas/phpdotenv": "^2.5@dev",
+        "php": ">=7.1"
     },
     "autoload": {
         "classmap": [
