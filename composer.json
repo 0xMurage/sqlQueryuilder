@@ -9,7 +9,9 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "vlucas/phpdotenv": "^2.5@dev"
+    },
     "autoload": {
         "classmap": [
             "./"
