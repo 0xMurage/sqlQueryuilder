@@ -8,6 +8,8 @@
 
 namespace QueryBuilder\db;
 
+
+use Dotenv\Dotenv;
 use PDO;
 use PDOException;
 
@@ -17,7 +19,7 @@ class Connect {
 	private static $conn;
 
 	protected static function makeConnection() {
-		 $dotenv = new Dotenv\Dotenv(__DIR__);
+		 $dotenv = new Dotenv('.'); //load .env file from source root folder
 		 $dotenv->load();
 		 /*ENSURE THE FOLLOWING ARE PROVIDEND*/
 		$dotenv->required(['DB_HOST', 'DB_PORT', 'DB_NAME','DB_USERNAME', 'DB_PASSWORD']);
