@@ -6,7 +6,21 @@ To include the library in an existing project using [composer](https://getcompos
  
     "murage/sqlddl" : "^dev-master"
 
+This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) and requires .env file at root of the project. To get started include the following ENV varibales to be able to get started (change as per your database connection) 
+
+        DB_CONNECTION=mysql
+        DB_HOST=127.0.0.1 
+        DB_PORT=3306
+        DB_NAME=mydatabase #database name
+        DB_USERNAME=secret #database username
+        DB_PASSWORD=secret #database password
   
+  where  
+  `DB_NAME`=your database name
+  
+  `DB_USERNAME`=your database username 
+  
+  `DB_PASSWORD`=your database password
 #**Usages**
 
 Every query starts with 
