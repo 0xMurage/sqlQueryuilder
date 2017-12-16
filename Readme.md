@@ -1,4 +1,13 @@
-#Instructions
+#**Installation**
+To include the library in an existing project using [composer](https://getcomposer.org/)
+    
+    composer require murage/sqlddl
+  or in composer.json add  as dependency
+ 
+    "murage/sqlddl" : "^dev-master"
+
+  
+#**Usages**
 
 Every query starts with 
 
