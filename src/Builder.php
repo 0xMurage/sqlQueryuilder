@@ -20,7 +20,7 @@ class Builder {
 	
 	protected $response = array( "error" => false );
 	
-
+	
 	
 	
 	public static function table( $table ) {
@@ -187,7 +187,7 @@ class Builder {
 			
 			if($data==null) {
 				$this->response["error"]=false;
-				$this->response["response"]="No data found";
+				$this->response["response"]=null;
 				return $this->response;
 			}
 			$this->response["error"]=false;
