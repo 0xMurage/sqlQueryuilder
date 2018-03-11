@@ -8,13 +8,13 @@
             "email": "hello@mimidots.com"
         }
     ],
-    "version":"1.0.0-RC3",
-    "minimum-stability": "dev",
+    "version":"1.0.0",
+    "minimum-stability": "stable",
     "license": "MIT",
 
     "require": {
-        "vlucas/phpdotenv": "^2.5@dev",
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "vlucas/phpdotenv": "^2.4"
     },
     "autoload": {
         "classmap": [
