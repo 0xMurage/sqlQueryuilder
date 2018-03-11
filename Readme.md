@@ -4,16 +4,16 @@ To include the library in an existing project using [composer](https://getcompos
     composer require murage/sqlddl
   or in composer.json add  as dependency
  
-    "murage/sqlddl" : "^dev-master"
+    "murage/sqlddl" : "~1.0.0"
 
 This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) and requires .env file at root of the project. To get started include the following ENV varibales to be able to get started (change as per your database connection) 
 
         DB_CONNECTION=mysql
         DB_HOST=127.0.0.1 
         DB_PORT=3306
-        DB_NAME=mydatabase #database name
-        DB_USERNAME=secret #database username
-        DB_PASSWORD=secret #database password
+        DB_NAME=mydatabase
+        DB_USERNAME=secret
+        DB_PASSWORD=secret
   
   where  
   `DB_NAME`=your database name
@@ -23,25 +23,35 @@ This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) a
   `DB_PASSWORD`=your database password
 # **Usages**
 
-Every query starts with 
+The library utilizes nesting of functions. Thus, there is no need for instantiating the Builder class. Start each query using:-
 
     Builder::table( "provide the table name here")
 
 Every query returns a json encoded response in format
 
-    { "error": boolean,
-    "response : "the response from the server"
+    { "status": "either error or success",
+      "response : "the response from the server",
+      "code":"response code"
     }
 
-If the response at error is true, the response message  includes the error message. Whereas, if the response is false,
-the message in the response depends on the query executed
-e.g in a successful select query; if there is data, an array of 
-records is returned such that:
+The code depends on the query being executed but on successful query, a code of 200 is returned. Whwere data is being fetched from the database,
+ an array of records is returned in the response body e.g. **:**
 
-    {"error":false;
+    {"status":success;
     "response":
-        {"id":5,"colum1":"valueX"},
-        {"id":6,"colum1":"valueK"},
+       [
+        {"id":5, "colum1":"valueX"},
+        {"id":6, "colum1":"valueK"}
+        ],
+     "code":200
+    }
+
+All queries that normally do not fetch any value from the database on successful execution will return
+
+    
+    {"status":success;
+    "response": "success",
+     "code":200
     }
 
 To perform a basic select from table test
@@ -66,10 +76,10 @@ To select only 3 columns
             ->select('column1','column2','column3')
             ->get()
             
-To select *column1* but alias as *c1*
+To select *column1* but alias as *name*
     
     Builder::table('test)
-                ->select('column1 as c1','column2','column3')
+                ->select('column1 as name','column2','column3')
                 ->get()
                 
 To select using where condition
@@ -95,7 +105,7 @@ To perform an insert
             ->insert('data1','data2','data3')
             ->into('column1','column2','column3')
      
-##### insert will return a response message of *inserted successful* on a successful insert
+
 
 To truncate table test
     
