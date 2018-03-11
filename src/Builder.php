@@ -1,25 +1,23 @@
 <?php
 
-use QueryBuilder\db\Connect;
-
 /**
  * All rights reserved.
- * User: Dread Pirate Roberts
+ * User: hello@mimidots.com
  * Date: 29-Oct-17
  * Time: 09:42
  */
-class Builder {
+
+use QueryBuilder\Connect;
+
+class Builder extends Connect{
 	
-	protected static $table;
-	protected $columns;
-	protected $values = [];
-	protected $whereby;
-	protected $order;
-	protected $limit;
-	protected $condition=['<','>','<>','!=','<=','>=','='];
-	
-	protected $response = array( "error" => false );
-	
+	private static $table;
+	private $columns;
+	private $values = [];
+	private $whereby;
+	private $order;
+	private $condition=['<','>','<>','!=','<=','>=','='];
+
 	
 	
 	
@@ -80,16 +78,18 @@ class Builder {
 				                 . $operator . '\''
 				                 . func_get_arg( 2 ) . '\'';
 			}else{
-				$this->response["error"]=true;
-				$this->response["response"]="Invalid condition provided in where function";
+				static::$response["status"]="error";
+                static::$response["response"]="Invalid condition provided in where function";
+                static::$response["code"]=7000;
 			}
 		} else if ( func_num_args() == 2 ) {
 			$this->whereby = func_get_arg( 0 ) . ' = \''
 			                 . func_get_arg( 1 ) . '\'';
 		}
 		else{
-			$this->response["error"]=true;
-			$this->response["response"]="Invalid parameters provided in where function";
+            static::$response["status"]="error";
+            static::$response["response"]="Invalid parameters provided in where function";
+            static::$response["code"]=7001;
 		}
 		
 		return $this;
@@ -99,22 +99,24 @@ class Builder {
 	public function get( $limit = 0,$offet=0 ) {
 		
 		//check if there is an error
-		if($this->response['error']==true){
-			return $this->exit();
+		if( static::$response['status']=="error"){
+			return static::terminate();
 		}
 		
 		//check if the limit is a number
 		if(!is_numeric($limit)){
-			$this->response["error"]   = false;
-			$this->response["response"] = "Parameter limit should be numeric function get()";
-			return $this->exit($this->response);
+            static::$response["status"]   = "error";
+            static::$response["response"] = "Parameter limit should be numeric function get()";
+            static::$response["code"]=6000;
+			return $this->terminate(static::$response);
 		}
 		
 		//check if the offsel is a number
 		if(!is_numeric($offet)){
-			$this->response["error"]   = false;
-			$this->response["response"] = "Parameter offset should be numeric in function get()";
-			return $this->exit($this->response);
+            static::$response["status"]  = "error";
+            static::$response["response"] = "Parameter offset should be numeric in function get()";
+            static::$response["code"]=6001;
+			return $this->terminate( static::$response);
 		}
 		
 		$table_name = self::$table;
@@ -138,70 +140,64 @@ class Builder {
 			$query = $query . ' OFFSET ' . $offset;
 		}
 		
-		return $this->exit(
+		return $this->terminate(
 			$this->fetch( $query )
 		);
 	}
-	
 
-	/**
-	 * @param $data
-	 *
-	 * @return string
-	 */
-	protected function exit( $data=null ) {
-		if($this->response["error"]!=false){
-			return json_encode($this->response);
-		}
-		return json_encode( $data );
-		
-	}
-	
-	/**
-	 * Executes a query that returns data
-	 *
-	 * @param $sql
-	 */
+
+    /**
+     * Executes a query that returns data
+     *
+     * @param $sql
+     * @return array|string
+     */
 	protected function fetch( $sql ) {
 		//TODO sanitize the sql query
-		try {
+
+		    $stm=null;
 			try {
 				$stm = Connect::getConn()->prepare( $sql );
 			}catch (Exception $e){
-				$this->response["error"]=true;
-				$this->response["response"]=$e->getMessage();
+                static::$response["status"]="error";
+                static::$response["response"]=$e->getMessage();
+                static::$response['code']=$e->getCode();
 			}
 			try {
 				$stm->execute();
 			}catch (Exception $e){
-				$this->response["error"]=true;
-				$this->response["response"]=$e->getMessage();
+                static::$response["status"]="error";
+                static::$response["response"]=$e->getMessage();
+                static::$response['code']=$e->getCode();
 				
 			}
+			try{
 			$data = null;
 			// set the resulting array to associative
-			$result = $stm->setFetchMode( PDO::FETCH_ASSOC );
+			$stm->setFetchMode( PDO::FETCH_ASSOC );
 			foreach ( new RecursiveArrayIterator( $stm->fetchAll() ) as $k => $v ) {
 				$data[] = $v;
 			}
 			
 			if($data==null) {
-				$this->response["error"]=false;
-				$this->response["response"]=null;
-				return $this->response;
+                static::$response["status"]="success";
+                static::$response["response"]=Null;
+                static::$response['code']=300;
+				return static::$response;
 			}
-			$this->response["error"]=false;
-			$this->response["response"]=$data;
-			return $this->response;
+        static::$response["status"]="success";
+        static::$response["response"]=$data;
+			return static::$response;
 			
 			
 		} catch ( PDOException $e ) {
-			$this->response["error"]=true;
-			$this->response["response"]=$e->getMessage();
+			    static::$response["status"]="error";
+                static::$response["response"]=$e->getMessage();
+                static::$response["code"]=$e->getCode();
 			
 		}
 		
-		return $this->exit();
+		return self::terminate();
 	}
 	
 	/**
@@ -214,14 +210,15 @@ class Builder {
 				"SELECT * FROM {$table}";
 			
 			//execute the query and return the data or error message
-			return $this->exit(
+			return $this->terminate(
 				$this->fetch( $query )
 			);
 			
 		}else {
-			$this->response["error"]   = true;
-			$this->response["response"] = "Table name cannot be empty";
-			return $this->exit( null );
+            static::$response["status"]   = "error";
+            static::$response["response"] = "Table name cannot be empty";
+            static::$response["code"]=5000;
+			return self::terminate();
 		}
 	}
 	
@@ -233,11 +230,16 @@ class Builder {
 			} else if ( is_array( $values ) ) {
 				$this->values = $values;
 			} else {
-				throw new Exception( "unrecognized parameter options in the insert values" );
+                static::$response["status"]   = "error";
+                static::$response["response"] = "unrecognized parameter options in the insert values";
+                static::$response["code"]=7004;
+                return self::terminate();
 			}
 		} catch ( Exception $e ) {
-			$this->response["error"]   = true;
-			$this->response["response"] = $e->getMessage();
+            static::$response["status"]   = "error";
+            static::$response["response"] = $e->getMessage();
+            static::$response["code"]=$e->getCode();
+            return  static::terminate();
 		}
 		
 		return $this;
@@ -255,13 +257,15 @@ class Builder {
 					explode( ',', $columns )
 				);
 			} catch ( Exception $e ) {
-				
-				$this->response["error"]   = true;
-				$this->response["response"] = "Unrecognized characters. Please refer to documentation on how to insert..";
+
+                static::$response["status"]   = "error";
+                static::$response["response"] = "Unrecognized characters. Please refer to documentation on how to insert a record";
+                static::$response["code"]=4001;
+                return  static::terminate();
 				
 			}
 		}
-		try {
+
 			if ( func_num_args() > 1 && func_num_args() == $valuesCount ) {
 				$this->columns = $this->columnize( func_get_args() );
 			} else if ( is_array( $columns ) && count( $columns ) == $valuesCount ) {
@@ -269,13 +273,12 @@ class Builder {
 			} else if ( $colStringCount == $valuesCount ) {
 				$this->columns = $columns;
 			} else {
-				//throw an error (columns count not equal to values count)
-				throw new Exception(  );
+                static::$response["status"]   = "error";
+                static::$response["response"] = "Columns count does not equal the values count";
+                static::$response['code']=4005;
+			return static::terminate();
 			}
-		} catch ( Exception $e ) {
-			$this->response["error"]   = true;
-			$this->response["response"] = "operation unsuccessful.Columns count does not equal the values count";
-		}
+
 		
 		return $this->doInsert();
 	}
@@ -286,8 +289,8 @@ class Builder {
 	 */
 	protected function doInsert() {
 		//check if there is an error from previous function execution
-		if($this->response["error"]==true){
-			return $this->exit( );
+		if(static::$response["status"]=="error"){
+			return static::terminate( );
 		}
 		//convert each columns to ? parameter
 		$columnParam = array_map( function () {
@@ -303,22 +306,25 @@ class Builder {
 			try {
 				$stm = Connect::getConn()->prepare( $sql );
 			}catch (Exception $e){
-				$this->response["error"]=true;
-				$this->response["response"]=$e->getMessage();
-				return $this->exit();
+				static::$response["status"]="error";
+				static::$response["response"]=$e->getMessage();
+                static::$response["code"]=$e->getCode();
+				return static::terminate();
 			}
 		
 		try {
 			$stm->execute( $this->values );
+
+            static::$response["status"]   = "success";
+            static::$response["response"] = "success";
+            static::$response["code"]=200;
 			
-			$this->response["error"]   = false;
-			$this->response["response"] = "Record insert successfully";
-			
-			return $this->exit( $this->response );
+			return static::terminate( static::$response);
 		}catch (Exception $e){
-			$this->response["error"]=true;
-			$this->response["response"]=$e->getMessage();
-			return $this->exit( $this->response );
+            static::$response["status"]="error";
+            static::$response["response"]=$e->getMessage();
+            static::$response["code"]=$e->getCode();
+			return $this->terminate( static::$response );
 		}
 	}
 	
@@ -328,16 +334,19 @@ class Builder {
 		$sql = "TRUNCATE TABLE " . self::$table;
 		try {
 			$this->exec( $sql );
+
+            static::$response["status"]   = "error";
+            static::$response["response"] = "success";
+            static::$response["code"]=200;
 			
-			$this->response["error"]   = false;
-			$this->response["response"] = "Table truncated successfully";
-			
-			return $this->exit( $this->response );
+			return $this->terminate(static::$response);
+
 		} catch ( Exception $e ) {
-			$this->response["error"]   = true;
-			$this->response["response"] = $e->getMessage();
+            static::$response["status"]   = "error";
+            static::$response["response"] = $e->getMessage();
+            static::$response["code"]=$e->getCode();
 			
-			return $this->exit( $this->response );
+			return $this->terminate( static::$response);
 		}
 	}
 	
@@ -350,8 +359,11 @@ class Builder {
 		try {
 			Connect::getConn()->exec( $query );
 		} catch ( Exception $e ) {
-			$this->response["error"]   = true;
-			$this->response["response"] = $e->getMessage();
+			static::$response["status"]   = "error";
+            static::$response["response"] = $e->getMessage();
+            static::$response["code"]=$e->getCode();
+
+            static::terminate();
 		}
 	}
 	
@@ -362,19 +374,16 @@ class Builder {
 			"DROP TABLE " . self::$table;
 			try {
 				$this->exec( $sql );
-				$this->response["error"]   = false;
-				$this->response["response"] = "Table deleted successfully";
-				return $this->exit($this->response);
+                static::$response["status"]   = "success";
+                static::$response["response"] = "success";
+				return self::terminate(static::$response);
+
 			}catch (Exception $e){
-				$this->response["error"]   = true;
-				$this->response["response"] = $e->getMessage();
-				return $this->exit($this->response);
+                static::$response["status"]   = "error";
+                static::$response["response"] = $e->getMessage();
+                static::$response["code"]=$e->getCode();
+				return $this->terminate(static::$response);
 			}
-		
-	}
-	
-	protected function formatValues( $values ) {
-		//TODO : sanitize the data
 		
 	}
 }
