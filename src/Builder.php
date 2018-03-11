@@ -111,7 +111,8 @@ class Builder extends Connect
             static::$response["status"] = "error";
             static::$response["response"] = "Parameter limit should be numeric function get()";
             static::$response["code"] = 6000;
-            return $this->terminate(static::$response);
+
+            $this->terminate(static::$response);
         }
 
         //check if the offsel is a number
@@ -119,7 +120,8 @@ class Builder extends Connect
             static::$response["status"] = "error";
             static::$response["response"] = "Parameter offset should be numeric in function get()";
             static::$response["code"] = 6001;
-            return $this->terminate(static::$response);
+
+            $this->terminate(static::$response);
         }
 
         $table_name = self::$table;
@@ -143,9 +145,7 @@ class Builder extends Connect
             $query = $query . ' OFFSET ' . $offset;
         }
 
-        return $this->terminate(
-            $this->fetch($query)
-        );
+          return  $this->fetch($query);
     }
 
 
@@ -214,7 +214,7 @@ class Builder extends Connect
     }
 
     /**
-     * @return string
+     * Fetch all data without limits or offset
      */
     public function all()
     {
@@ -224,9 +224,8 @@ class Builder extends Connect
                 "SELECT * FROM {$table}";
 
             //execute the query and return the data or error message
-            return $this->terminate(
-                $this->fetch($query)
-            );
+              return  $this->fetch($query);
+
 
         } else {
             static::$response["status"] = "error";
