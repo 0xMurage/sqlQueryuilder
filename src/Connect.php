@@ -73,7 +73,7 @@ class Connect
      */
     protected static function terminate($data = null)
     {
-        if (static::$response["error"] != false) {
+        if (static::$response["status"] != "success") {
             return json_encode(static::$response);
         }
         return json_encode($data);
