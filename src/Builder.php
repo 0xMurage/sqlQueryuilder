@@ -71,24 +71,23 @@ class Builder extends Connect
      */
     public function where($params)
     {
-        //TODO sanitize the parameters
         //TODO add functionality for (and ,or) multiple where clauses
 
         if (func_num_args() == 3) {
 
-            $operator = func_get_arg(1);
+            $operator = self::sanitize(func_get_arg(1));
             if (is_numeric(array_search($operator, $this->condition))) {
-                $this->whereby = func_get_arg(0)
+                $this->whereby = self::sanitize(func_get_arg(0))
                     . $operator . '\''
-                    . func_get_arg(2) . '\'';
+                    . self::sanitize(func_get_arg(2)). '\'';
             } else {
                 static::$response["status"] = "error";
                 static::$response["response"] = "Invalid condition provided in where function";
                 static::$response["code"] = 7000;
             }
         } else if (func_num_args() == 2) {
-            $this->whereby = func_get_arg(0) . ' = \''
-                . func_get_arg(1) . '\'';
+            $this->whereby =self::sanitize(func_get_arg(0)) . ' = \''
+                . self::sanitize(func_get_arg(1)). '\'';
         } else {
             static::$response["status"] = "error";
             static::$response["response"] = "Invalid parameters provided in where function";
