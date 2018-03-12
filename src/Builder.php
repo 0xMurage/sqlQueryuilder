@@ -113,7 +113,7 @@ class Builder extends Connect
         //check if the limit is a number
         if (!is_numeric($limit)) {
             static::$response["status"] = "error";
-            static::$response["response"] = "Parameter limit should be numeric function get()";
+            static::$response["response"] = "Parameter limit should be numeric at function get()";
             static::$response["code"] = 6000;
 
             return static::terminate(static::$response);
@@ -122,7 +122,7 @@ class Builder extends Connect
         //check if the offsel is a number
         if (!is_numeric($offet)) {
             static::$response["status"] = "error";
-            static::$response["response"] = "Parameter offset should be numeric in function get()";
+            static::$response["response"] = "Parameter offset should be numeric at function get()";
             static::$response["code"] = 6001;
 
             return static::terminate(static::$response);
