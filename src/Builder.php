@@ -103,7 +103,7 @@ class Builder extends Connect
 
         //check if there is an error
         if (static::$response['status'] == "error") {
-            return static::terminate();
+           return static::terminate(static::$response);
         }
 
         //check if the limit is a number
@@ -166,7 +166,7 @@ class Builder extends Connect
                 static::$response["status"] = "error";
                 static::$response["response"] = $e->getMessage();
                 static::$response['code'] = $e->getCode();
-                return static::terminate();
+               return static::terminate(static::$response);
 
             }
             try {
@@ -175,13 +175,13 @@ class Builder extends Connect
                 static::$response["status"] = "error";
                 static::$response["response"] = $e->getMessage();
                 static::$response['code'] = $e->getCode();
-                return static::terminate();
+               return static::terminate(static::$response);
             }
         } catch (Exception $e) {
             static::$response["status"] = "error";
             static::$response["response"] = $e->getMessage();
             static::$response['code'] = $e->getCode();
-            return static::terminate();
+           return static::terminate(static::$response);
 
         }
         try {
@@ -196,18 +196,18 @@ class Builder extends Connect
                 static::$response["status"] = "success";
                 static::$response["response"] = Null;
                 static::$response['code'] = 300;
-                return static::terminate();
+               return static::terminate(static::$response);
             }
             static::$response["status"] = "success";
             static::$response["response"] = $data;
-            return static::terminate();
+           return static::terminate(static::$response);
 
 
         } catch (PDOException $e) {
             static::$response["status"] = "error";
             static::$response["response"] = $e->getMessage();
             static::$response["code"] = $e->getCode();
-            return static::terminate();
+           return static::terminate(static::$response);
         }
 
 
@@ -231,7 +231,7 @@ class Builder extends Connect
             static::$response["status"] = "error";
             static::$response["response"] = "Table name cannot be empty";
             static::$response["code"] = 5000;
-            return self::terminate();
+            return static::terminate(static::$response);
         }
     }
 
@@ -247,13 +247,13 @@ class Builder extends Connect
                 static::$response["status"] = "error";
                 static::$response["response"] = "unrecognized parameter options in the insert values";
                 static::$response["code"] = 7004;
-                return self::terminate();
+                return static::terminate(static::$response);
             }
         } catch (Exception $e) {
             static::$response["status"] = "error";
             static::$response["response"] = $e->getMessage();
             static::$response["code"] = $e->getCode();
-            return static::terminate();
+           return static::terminate(static::$response);
         }
 
         return $this;
@@ -276,7 +276,7 @@ class Builder extends Connect
                 static::$response["status"] = "error";
                 static::$response["response"] = "Unrecognized characters. Please refer to documentation on how to insert a record";
                 static::$response["code"] = 4001;
-                return static::terminate();
+               return static::terminate(static::$response);
 
             }
         }
@@ -291,7 +291,7 @@ class Builder extends Connect
             static::$response["status"] = "error";
             static::$response["response"] = "Columns count does not equal the values count";
             static::$response['code'] = 4005;
-            return static::terminate();
+           return static::terminate(static::$response);
         }
 
 
@@ -306,7 +306,7 @@ class Builder extends Connect
     {
         //check if there is an error from previous function execution
         if (static::$response["status"] == "error") {
-            return static::terminate();
+           return static::terminate(static::$response);
         }
         //convert each columns to ? parameter
         $columnParam = array_map(function () {
@@ -325,7 +325,7 @@ class Builder extends Connect
             static::$response["status"] = "error";
             static::$response["response"] = $e->getMessage();
             static::$response["code"] = $e->getCode();
-            return static::terminate();
+           return static::terminate(static::$response);
         }
 
         try {
@@ -381,7 +381,7 @@ class Builder extends Connect
             static::$response["response"] = $e->getMessage();
             static::$response["code"] = $e->getCode();
 
-            static::terminate();
+            static::terminate(static::$response);
         }
     }
 
