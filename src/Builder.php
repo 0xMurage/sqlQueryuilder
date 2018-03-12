@@ -22,6 +22,10 @@ class Builder extends Connect
 
     public static function table($table)
     {
+        //as all calls will start with this function, first check if database connection has being established
+        if(Connect::getConn()==null){
+            self::terminate(self::$response);
+        }
         //TODO sanitize the table name
         self::$table = $table;
 
