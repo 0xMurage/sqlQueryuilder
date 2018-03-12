@@ -26,8 +26,7 @@ class Builder extends Connect
         if(Connect::getConn()==null){
             self::terminate(self::$response);
         }
-        //TODO sanitize the table name
-        self::$table = $table;
+        self::$table = self::sanitize($table);
 
         return new static;
     }
@@ -393,8 +392,8 @@ class Builder extends Connect
 
     public function drop()
     {
-        //todo validate the table name
 
+        static::valTable();
         $sql = /** @lang text */
             "DROP TABLE " . self::$table;
         try {
@@ -417,5 +416,21 @@ class Builder extends Connect
         $data = stripslashes($data);
         $data = htmlspecialchars($data);
         return $data;
+    }
+
+
+    /**
+     *Validate that the table name has been provided and is a string
+     */
+    private static function valTable(){
+        if(static::$table==null || ! is_string(static::$table)){
+            static::$response["status"] = "error";
+            static::$response["response"] = "check the table name provided";
+            static::$response["code"]=5000;
+            return self::terminate(static::$response);
+
+        }else{
+            static::$table=self::sanitize(static::$table);
+        }
     }
 }
