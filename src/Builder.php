@@ -116,7 +116,7 @@ class Builder extends Connect
             static::$response["response"] = "Parameter limit should be numeric function get()";
             static::$response["code"] = 6000;
 
-            $this->terminate(static::$response);
+            return static::terminate(static::$response);
         }
 
         //check if the offsel is a number
@@ -125,7 +125,7 @@ class Builder extends Connect
             static::$response["response"] = "Parameter offset should be numeric in function get()";
             static::$response["code"] = 6001;
 
-            $this->terminate(static::$response);
+            return static::terminate(static::$response);
         }
 
         $table_name = self::$table;
@@ -344,7 +344,7 @@ class Builder extends Connect
             static::$response["status"] = "error";
             static::$response["response"] = $e->getMessage();
             static::$response["code"] = $e->getCode();
-            return $this->terminate(static::$response);
+            return static::terminate(static::$response);
         }
     }
 
@@ -360,14 +360,14 @@ class Builder extends Connect
             static::$response["response"] = "success";
             static::$response["code"] = 200;
 
-            return $this->terminate(static::$response);
+            return static::terminate(static::$response);
 
         } catch (Exception $e) {
             static::$response["status"] = "error";
             static::$response["response"] = $e->getMessage();
             static::$response["code"] = $e->getCode();
 
-            return $this->terminate(static::$response);
+            return static::terminate(static::$response);
         }
     }
 
@@ -375,6 +375,7 @@ class Builder extends Connect
      * Executes a query that does not return any results
      *
      * @param $query
+     * @return null|string
      */
     protected function exec($query)
     {
@@ -385,8 +386,9 @@ class Builder extends Connect
             static::$response["response"] = $e->getMessage();
             static::$response["code"] = $e->getCode();
 
-            static::terminate(static::$response);
+            return static::terminate(static::$response);
         }
+        return null;
     }
 
     public function drop()
@@ -405,7 +407,7 @@ class Builder extends Connect
             static::$response["status"] = "error";
             static::$response["response"] = $e->getMessage();
             static::$response["code"] = $e->getCode();
-            return $this->terminate(static::$response);
+            return static::terminate(static::$response);
         }
 
     }
