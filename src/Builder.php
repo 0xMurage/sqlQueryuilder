@@ -98,7 +98,7 @@ class Builder extends Connect
     }
 
 
-    public function get($limit = 0, $offet = 0)
+    public function get($limit = 0, $offset = 0)
     {
 
         //check if there is an error
@@ -115,8 +115,8 @@ class Builder extends Connect
             return static::terminate(static::$response);
         }
 
-        //check if the offsel is a number
-        if (!is_numeric($offet)) {
+        //check if the offset is a number
+        if (!is_numeric($offset)) {
             static::$response["status"] = "error";
             static::$response["response"] = "Parameter offset should be numeric at function get()";
             static::$response["code"] = 6001;
