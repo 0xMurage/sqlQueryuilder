@@ -356,7 +356,7 @@ class Builder extends Connect
         try {
             $this->exec($sql);
 
-            static::$response["status"] = "error";
+            static::$response["status"] = "success";
             static::$response["response"] = "success";
             static::$response["code"] = 200;
 
