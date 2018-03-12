@@ -47,9 +47,16 @@ class Connect
         } catch (PDOException $e) {
 
             self::$response['status'] = 'error';
-            self::$response['response'] = "cannot establish connection with the database.Check the provided credentials";
+            if($e->getCode()==2002){
+                self::$response['response'] = "Lost connection with the database.";
+            }
+            elseif($e->getCode()==1044 ||$e->getCode()==1045){
+                self::$response['response'] = "Incorrect database access credentials.";
+            }else{
+                self::$response['response'] = "Database access error.";
+            }
+
             self::$response['code'] = $e->getCode();
-            self::terminate(json_encode(self::$response));
         }
     }
 
