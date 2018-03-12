@@ -236,12 +236,11 @@ class Builder extends Connect
 
     public function insert($values)
     {
-        // TODO sanitize the values
         try {
             if (func_num_args() > 0 && !is_array($values)) {
-                $this->values = array_merge($this->values, func_get_args());
+                $this->values = array_merge($this->values, self::sanitizeAV(func_get_args()));
             } else if (is_array($values)) {
-                $this->values = $values;
+                $this->values = self::sanitize($values);
             } else {
                 static::$response["status"] = "error";
                 static::$response["response"] = "unrecognized parameter options in the insert values";
