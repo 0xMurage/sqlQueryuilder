@@ -418,6 +418,17 @@ class Builder extends Connect
         return $data;
     }
 
+    /**
+     * Sanitizes values in an array
+     * @param array $arry: the array to sanitize
+     * @return array :sanitized array output
+     */
+    private static function sanitizeAV(array $arry){
+       return array_map(function($value){
+            return self::sanitize($value);
+        },$arry);
+    }
+
 
     /**
      *Validate that the table name has been provided and is a string
