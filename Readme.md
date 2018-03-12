@@ -1,4 +1,6 @@
 # **Installation**
+First ensure the PHP version is greater or equal to 7
+
 To include the library in an existing project using [composer](https://getcomposer.org/)
     
     composer require murage/sqlddl
