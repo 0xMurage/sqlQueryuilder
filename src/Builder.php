@@ -38,8 +38,6 @@ class Builder extends Connect
      */
     public function select($columns = "")
     {
-        //TODO sanitize the columns
-
         //check if columns were passed as individual string parameters
 
         if (func_num_args() > 1) {
@@ -47,7 +45,7 @@ class Builder extends Connect
         } else {
             //check if a simgle array of columns was passed(a hack)
             $this->columns = is_array($columns) ? $this->columnize($columns)
-                : $columns;
+                : self::sanitize($columns);
         }
 
         return $this;
@@ -62,7 +60,7 @@ class Builder extends Connect
      */
     protected function columnize(array $columns)
     {
-        //TODO sanitize the columns
+        $columns=self::sanitizeAV($columns);//sanitize the values
         return implode(",", array_values($columns));
     }
 
