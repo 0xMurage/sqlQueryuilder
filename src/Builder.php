@@ -157,8 +157,7 @@ class Builder extends Connect
      */
     protected function fetch($sql)
     {
-        //TODO sanitize the sql query
-
+        $sql=self::sanitize($sql); //sanitize the query
         try {
             try {
                 $stm = Connect::getConn()->prepare($sql);
@@ -346,8 +345,7 @@ class Builder extends Connect
 
     public function truncate()
     {
-        //todo validate the table name
-
+        self::valTable();
         $sql = "TRUNCATE TABLE " . self::$table;
         try {
             $this->exec($sql);

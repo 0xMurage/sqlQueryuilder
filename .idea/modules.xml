@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/QueryBuilder.iml" filepath="$PROJECT_DIR$/.idea/QueryBuilder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/sqlQueryuilder.iml" filepath="$PROJECT_DIR$/.idea/sqlQueryuilder.iml" />
     </modules>
   </component>
 </project>
