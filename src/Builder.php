@@ -71,8 +71,6 @@ class Builder extends Connect
      */
     public function where($params)
     {
-        //TODO add functionality for (and ,or) multiple where clauses
-
         if (func_num_args() == 3) {
 
             $operator = self::sanitize(func_get_arg(1));
@@ -97,6 +95,55 @@ class Builder extends Connect
         return $this;
     }
 
+    public function andWhere($param){
+        if (func_num_args() == 3) {
+
+            $operator = self::sanitize(func_get_arg(1));
+            if (is_numeric(array_search($operator, $this->condition))) {
+                $this->whereby .=' and '.self::sanitize(func_get_arg(0))
+                    . $operator . '\''
+                    . self::sanitize(func_get_arg(2)) . '\'';
+            } else {
+                static::$response["status"] = "error";
+                static::$response["response"] = "Invalid condition provided in where function";
+                static::$response["code"] = 7000;
+            }
+        } else if (func_num_args() == 2) {
+            $this->whereby .= ' and '.self::sanitize(func_get_arg(0)). ' = \''
+                .self::sanitize(func_get_arg(1) ). '\'';
+        } else {
+            static::$response["status"] = "error";
+            static::$response["response"] = "Invalid parameters provided in where function";
+            static::$response["code"] = 7001;
+        }
+
+        return $this;
+    }
+
+    public function orWhere($param){
+        if (func_num_args() == 3) {
+
+            $operator =self::sanitize(func_get_arg(1));
+            if (is_numeric(array_search($operator, $this->condition))) {
+                $this->whereby .=' or '.self::sanitize(func_get_arg(0))
+                    . $operator . '\''
+                    . self::sanitize(func_get_arg(2)) . '\'';
+            } else {
+                static::$response["status"] = "error";
+                static::$response["response"] = "Invalid condition provided in where function";
+                static::$response["code"] = 7000;
+            }
+        } else if (func_num_args() == 2) {
+            $this->whereby .= ' or '.self::sanitize(func_get_arg(0)) . ' = \''
+                . self::sanitize(func_get_arg(1)) . '\'';
+        } else {
+            static::$response["status"] = "error";
+            static::$response["response"] = "Invalid parameters provided in where function";
+            static::$response["code"] = 7001;
+        }
+
+        return $this;
+    }
 
     public function get($limit = 0, $offset = 0)
     {
@@ -437,5 +484,6 @@ class Builder extends Connect
         }else{
             static::$table=self::sanitize(static::$table);
         }
+        return static::$table; //no effect
     }
 }
