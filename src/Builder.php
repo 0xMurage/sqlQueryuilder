@@ -246,7 +246,8 @@ class Builder extends Connect
             }
             static::$response["status"] = "success";
             static::$response["response"] = $data;
-           return static::terminate(static::$response);
+            static::$response['code'] = 200;
+            return static::terminate(static::$response);
 
 
         } catch (PDOException $e) {
@@ -476,6 +477,38 @@ class Builder extends Connect
         }
         return true;
     }
+
+    /**
+     * Warning: call this function after where clause or all data will be deleted
+     * Function to delete record(s)
+     * @return mixed
+     */
+    public function delete(){
+
+        $query= /** @lang text */
+            'DELETE FROM '.self::sanitize(static::$table);
+
+
+        if (!empty($this->whereby)) {
+
+            $query = $query . ' WHERE ' . $this->whereby;
+        }
+
+        try {
+            $this->exec($query);
+
+            static::$response["status"] = "success";
+            static::$response["response"] = 'success';
+            static::$response['code'] = 200;
+            return static::terminate(static::$response);
+        } catch (Exception $e) {
+            static::$response["status"] = "error";
+            static::$response["response"] = $e->getMessage();
+            static::$response['code'] = $e->getCode();
+            return static::terminate(static::$response);
+        }
+    }
+
 
     public function truncate()
     {
