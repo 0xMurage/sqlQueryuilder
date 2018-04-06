@@ -102,6 +102,12 @@ class Builder extends Connect
         return $this;
     }
 
+    /**
+     * Add condition for and in where clause
+     * @see where
+     * @param $param
+     * @return $this
+     */
     public function andWhere($param){
         if (func_num_args() == 3) {
 
@@ -128,7 +134,7 @@ class Builder extends Connect
     }
 
     /**
-     * Adds condition for or where clause
+     * Adds condition for or in where clause
      * @see where
      * @param $param
      * @return $this
@@ -155,6 +161,33 @@ class Builder extends Connect
             static::$response["code"] = 7001;
         }
 
+        return $this;
+    }
+
+    /**
+     * Set order in which the return results will be return
+     * @param string $column :column to base the order on
+     * @param string $sort :asc or desc
+     * @return $this|mixed
+     */
+    public function orderBy($column = '', $sort = 'desc')
+    {
+        $column=self::sanitize($column);
+        $sort=strtoupper(self::sanitize($sort));
+
+        /*check if the sort method passed is valid */
+        if (hash_equals('DESC',$sort) || hash_equals('ASC',$sort)){
+            static::$response["status"] = "error";
+            static::$response["response"] = "The sort order in order by clause is invalid";
+            static::$response['code'] = 6050;
+            return static::terminate(static::$response);
+        }
+
+        if ($this->order == null) {
+            $this->order = " ORDER BY $column $sort";
+        } else {
+            $this->order .= ", $column $sort";
+        }
         return $this;
     }
 
@@ -209,6 +242,10 @@ class Builder extends Connect
         }
         if (!empty($offset)) {
             $query = $query . ' OFFSET ' . $offset;
+        }
+
+        if (!empty($this->order)) {
+            $query .= $this->order;
         }
 
           return  $this->fetch($query);
@@ -289,6 +326,9 @@ class Builder extends Connect
             $query = /** @lang text */
                 "SELECT * FROM {$table}";
 
+            if (!empty($this->order)) {
+                $query .= $this->order;
+            }
             //execute the query and return the data or error message
               return  $this->fetch($query);
 
