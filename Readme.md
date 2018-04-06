@@ -23,7 +23,7 @@ This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) a
   `DB_USERNAME`=your database username 
   
   `DB_PASSWORD`=your database password
-# **Usages**
+# [Usages](manual.md)
 
 The library utilizes nesting of functions, and does not require instantiating the Builder class. Start each query using :-
 
