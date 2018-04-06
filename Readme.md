@@ -8,7 +8,7 @@ To include the library in an existing project using [composer](https://getcompos
  
     "murage/sqlddl" : "~1.0.0"
 
-This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) and requires .env file at root of the project. To get started include the following ENV varibales to be able to get started (change as per your database connection) 
+This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) and requires .env file at root of the project. To get started include the following ENV variables to be able to get started (change as per your database connection) 
 
         DB_CONNECTION=mysql
         DB_HOST=127.0.0.1 
@@ -25,7 +25,7 @@ This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) a
   `DB_PASSWORD`=your database password
 # **Usages**
 
-The library utilizes nesting of functions. Thus, there is no need for instantiating the Builder class. Start each query using:-
+The library utilizes nesting of functions, and does not require instantiating the Builder class. Start each query using :-
 
     Builder::table( "provide the table name here")
 
@@ -36,7 +36,7 @@ Every query returns a json encoded response in format
       "code":"response code"
     }
 
-The code depends on the query being executed but on successful query, a code of 200 is returned. Whwere data is being fetched from the database,
+The code depends on the query being executed but on successful query, a code of 200 is returned. Where data is being fetched from the database,
  an array of records is returned in the response body e.g. **:**
 
     {"status":success;
