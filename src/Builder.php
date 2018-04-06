@@ -23,13 +23,15 @@ class Builder extends Connect
     /**
      * Sets the table on to which the various statements are executed.
      * @param $table
-     * @return static
+     * @return string
      */
     public static function table($table)
     {
         //as all calls will start with this function, first check if database connection has being established
         if(Connect::getConn()==null){
-            self::terminate(self::$response);
+            /* TODO: get more convenient method to handle database connection error*/
+            header("Location:");
+           return self::terminate(self::$response);
         }
         self::$table = self::sanitize($table);
 
