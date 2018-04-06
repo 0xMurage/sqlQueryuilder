@@ -20,6 +20,11 @@ class Builder extends Connect
     private $condition = ['<', '>', '<>', '!=', '<=', '>=', '='];
 
 
+    /**
+     * Sets the table on to which the various statements are executed.
+     * @param $table
+     * @return static
+     */
     public static function table($table)
     {
         //as all calls will start with this function, first check if database connection has being established
@@ -32,6 +37,7 @@ class Builder extends Connect
     }
 
     /**
+     * Sets which columns to select
      * @param string $columns
      *
      * @return $this
@@ -66,6 +72,7 @@ class Builder extends Connect
 
 
     /**
+     * Add conditional evaluation of where clause
      * $column, $operator = "", $value
      * @return $this
      */
@@ -120,6 +127,12 @@ class Builder extends Connect
         return $this;
     }
 
+    /**
+     * Adds condition for or where clause
+     * @see where
+     * @param $param
+     * @return $this
+     */
     public function orWhere($param){
         if (func_num_args() == 3) {
 
@@ -145,6 +158,12 @@ class Builder extends Connect
         return $this;
     }
 
+    /**
+     * Fetch records form database
+     * @param int $limit :optional limit of records to be retrieved
+     * @param int $offset :the index which the record should be retrieved from
+     * @return array|string
+     */
     public function get($limit = 0, $offset = 0)
     {
 
@@ -282,6 +301,11 @@ class Builder extends Connect
         }
     }
 
+    /**
+     * Sets the values to be inserted
+     * @param $values
+     * @return $this|string
+     */
     public function insert($values)
     {
         try {
@@ -306,6 +330,11 @@ class Builder extends Connect
     }
 
 
+    /**
+     * Sets the column to which the values will be inserted
+     * @param $columns
+     * @return string
+     */
     public function into($columns)
     {
         //if columns count does not match values count, throw an error.
@@ -345,7 +374,7 @@ class Builder extends Connect
     }
 
     /**
-     * Perform the actual database insert
+     * Performs the actual database insert
      * @return string
      */
     protected function doInsert()
@@ -480,7 +509,7 @@ class Builder extends Connect
 
     /**
      * Warning: call this function after where clause or all data will be deleted
-     * Function to delete record(s)
+     * Deletes all or defined record(s) in the where clause
      * @return mixed
      */
     public function delete(){
@@ -510,6 +539,10 @@ class Builder extends Connect
     }
 
 
+    /**
+     * Truncates a given table
+     * @return string
+     */
     public function truncate()
     {
         self::valTable();
@@ -552,6 +585,10 @@ class Builder extends Connect
         return null;
     }
 
+    /**
+     * Function to drop a table
+     * @return string
+     */
     public function drop()
     {
 
@@ -572,6 +609,12 @@ class Builder extends Connect
         }
 
     }
+
+    /**
+     * Sanitizes the data input values
+     * @param $data
+     * @return string
+     */
     private static function sanitize($data)
     {
         $data = trim($data);
