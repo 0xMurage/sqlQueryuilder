@@ -344,7 +344,7 @@ class Builder extends Connect
     }
 
     /**
-     * Perform the actusl database insert
+     * Perform the actual database insert
      * @return string
      */
     protected function doInsert()
@@ -387,6 +387,94 @@ class Builder extends Connect
             static::$response["code"] = $e->getCode();
             return static::terminate(static::$response);
         }
+    }
+
+    /**
+     * Warning: call the where clause first or all table data will be updated!
+     * @param $data :associative array of column to value to be updated
+     * @return string
+     */
+    public function update($data)
+    {
+
+        if (is_array($data)) {
+            if ($this->isAssocStr($data)) {
+
+                $query = "UPDATE " . self::$table . ' SET ';
+
+                $this->values = array_values(array_map(function ($c) {
+                    return self::sanitize($c);
+                }, $data));
+
+                $this->columns = array_keys($data);
+
+                $columnParam = array_map(function ($column) {
+                    return self::sanitize($column) . '=?';
+                }, $this->columns);
+
+                $query .= $this->columnize($columnParam);
+
+                if (!empty($this->whereby)) {
+
+                    $query = $query . ' WHERE ' . $this->whereby;
+                }
+
+                try {
+                    $stm = Connect::getConn()->prepare($query);
+                } catch (Exception $e) {
+
+                    static::$response["status"] = "error";
+                    static::$response["response"] = $e->getMessage();
+                    static::$response["code"]=$e->getCode();
+                    return self::terminate(static::$response);
+                }
+
+                try {
+
+                    $stm->execute($this->values);
+
+                    static::$response["status"] = "success";
+                    static::$response["response"] = "success";
+                    static::$response["code"] = 200;
+
+                    return static::terminate(static::$response);
+
+                } catch (Exception $e) {
+                    static::$response["status"] = "error";
+                    static::$response["response"] = $e->getMessage();
+                    static::$response["code"]=$e->getCode();
+                    return self::terminate(static::$response);
+                }
+            }
+
+            static::$response["status"] = "error";
+            static::$response["response"] = "Associative array expected in update function but sequential array passed";
+            static::$response["code"]=6501;
+            return self::terminate(static::$response);
+
+        }
+        static::$response["status"] = "error";
+        static::$response["response"] = "Unrecognized data. Associative array expected in update function";
+        static::$response["code"]=6500;
+        return self::terminate(static::$response);
+    }
+
+    /**
+     * Function to check if an array is association or sequential
+     * @param $array
+     * @return bool
+     */
+    private function isAssocStr($array)
+    {
+        if(!is_array($array)){
+            return false;
+        }
+        for (reset($array); is_int(key($array));
+             next($array)) {
+            if (is_null(key($array)))
+                return false;
+        }
+        return true;
     }
 
     public function truncate()
