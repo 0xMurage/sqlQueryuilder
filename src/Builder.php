@@ -178,7 +178,7 @@ class Builder extends Connect
         $sort=strtoupper(self::sanitize($sort));
 
         /*check if the sort method passed is valid */
-        if (hash_equals('DESC',$sort) || hash_equals('ASC',$sort)){
+        if (!(hash_equals('DESC',$sort) || hash_equals('ASC',$sort))){
             static::$response["status"] = "error";
             static::$response["response"] = "The sort order in order by clause is invalid";
             static::$response['code'] = 6050;
