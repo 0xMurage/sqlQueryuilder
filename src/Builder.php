@@ -6,8 +6,12 @@
  * Date: 29-Oct-17
  * Time: 09:42
  */
-
+namespace mysqlBuilder;
+use Exception;
+use PDO;
+use PDOException;
 use QueryBuilder\Connect;
+use RecursiveArrayIterator;
 
 class Builder extends Connect
 {
@@ -23,7 +27,7 @@ class Builder extends Connect
     /**
      * Sets the table on to which the various statements are executed.
      * @param $table
-     * @return string
+     * @return string | $this
      */
     public static function table($table)
     {
