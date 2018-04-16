@@ -39,6 +39,19 @@ class Builder extends Connect
     }
 
     /**
+     * Sanitizes the data input values
+     * @param $data
+     * @return string
+     */
+    private static function sanitize($data)
+    {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+        return $data;
+    }
+
+    /**
      * Sets which columns to select
      * @param string $columns
      *
@@ -72,6 +85,16 @@ class Builder extends Connect
         return implode(",", array_values($columns));
     }
 
+    /**
+     * Sanitizes values in an array
+     * @param array $arry: the array to sanitize
+     * @return array :sanitized array output
+     */
+    private static function sanitizeAV(array $arry){
+       return array_map(function($value){
+            return self::sanitize($value);
+        },$arry);
+    }
 
     /**
      * Add conditional evaluation of where clause
@@ -253,7 +276,6 @@ class Builder extends Connect
           return  $this->fetch($query);
     }
 
-
     /**
      * Executes a query that returns data
      *
@@ -370,7 +392,6 @@ class Builder extends Connect
 
         return $this;
     }
-
 
     /**
      * Sets the column to which the values will be inserted
@@ -580,6 +601,25 @@ class Builder extends Connect
         }
     }
 
+    /**
+     * Executes a query that does not return any results
+     *
+     * @param $query
+     * @return null|string
+     */
+    protected function exec($query)
+    {
+        try {
+            Connect::getConn()->exec($query);
+        } catch (Exception $e) {
+            static::$response["status"] = "error";
+            static::$response["response"] = $e->getMessage();
+            static::$response["code"] = $e->getCode();
+
+            return static::terminate(static::$response);
+        }
+        return null;
+    }
 
     /**
      * Truncates a given table
@@ -608,23 +648,19 @@ class Builder extends Connect
     }
 
     /**
-     * Executes a query that does not return any results
-     *
-     * @param $query
-     * @return null|string
+     *Validate that the table name has been provided and is a string
      */
-    protected function exec($query)
-    {
-        try {
-            Connect::getConn()->exec($query);
-        } catch (Exception $e) {
+    private static function valTable(){
+        if(static::$table==null || ! is_string(static::$table)){
             static::$response["status"] = "error";
-            static::$response["response"] = $e->getMessage();
-            static::$response["code"] = $e->getCode();
+            static::$response["response"] = "check the table name provided";
+            static::$response["code"]=5000;
+            return self::terminate(static::$response);
 
-            return static::terminate(static::$response);
+        }else{
+            static::$table=self::sanitize(static::$table);
         }
-        return null;
+        return static::$table; //no effect
     }
 
     /**
@@ -650,46 +686,5 @@ class Builder extends Connect
             return static::terminate(static::$response);
         }
 
-    }
-
-    /**
-     * Sanitizes the data input values
-     * @param $data
-     * @return string
-     */
-    private static function sanitize($data)
-    {
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data);
-        return $data;
-    }
-
-    /**
-     * Sanitizes values in an array
-     * @param array $arry: the array to sanitize
-     * @return array :sanitized array output
-     */
-    private static function sanitizeAV(array $arry){
-       return array_map(function($value){
-            return self::sanitize($value);
-        },$arry);
-    }
-
-
-    /**
-     *Validate that the table name has been provided and is a string
-     */
-    private static function valTable(){
-        if(static::$table==null || ! is_string(static::$table)){
-            static::$response["status"] = "error";
-            static::$response["response"] = "check the table name provided";
-            static::$response["code"]=5000;
-            return self::terminate(static::$response);
-
-        }else{
-            static::$table=self::sanitize(static::$table);
-        }
-        return static::$table; //no effect
     }
 }
