@@ -16,9 +16,15 @@
         "php": ">=7.1",
         "vlucas/phpdotenv": "^2.4"
     },
+
     "autoload": {
         "classmap": [
             "./"
+        ]
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ]
     }
 }

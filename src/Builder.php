@@ -33,9 +33,8 @@ class Builder extends Connect
     {
         //as all calls will start with this function, first check if database connection has being established
         if(Connect::getConn()==null){
-            /* TODO: get more convenient method to handle database connection error*/
-            header("Location:");
-           return self::terminate(self::$response);
+            //lets just return the object of the class in-case of connection error (developer will handle the rest)
+            return new static ;
         }
         self::$table = self::sanitize($table);
 
