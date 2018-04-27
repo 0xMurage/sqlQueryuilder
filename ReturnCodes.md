@@ -27,4 +27,4 @@ Here are the of defined return codes:
     
 
 Also, PDO error codes and respective messages can also be returned.
- For documentation on such, check the official documentation [here]('')
+ For documentation on such, check the official documentation [here]('http://php.net/manual/en/book.pdo.php')
