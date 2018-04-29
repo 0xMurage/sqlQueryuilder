@@ -111,7 +111,7 @@ class Builder extends Connect
             $operator = func_get_arg(1);
             if (is_numeric(array_search($operator, $this->condition))) {
                 $this->whereby = self::sanitize(func_get_arg(0))
-                    .self::sanitize($operator) . '\''
+                    .' '.$operator .' \''
                     . self::sanitize(func_get_arg(2)). '\'';
             } else {
                 static::$response["status"] = "error";
@@ -142,7 +142,7 @@ class Builder extends Connect
             $operator = func_get_arg(1);
             if (is_numeric(array_search($operator, $this->condition))) {
                 $this->whereby .=' and '.self::sanitize(func_get_arg(0))
-                    .self::sanitize( $operator) . '\''
+                    .' '. $operator. ' \''
                     . self::sanitize(func_get_arg(2)) . '\'';
             } else {
                 static::$response["status"] = "error";
@@ -173,7 +173,7 @@ class Builder extends Connect
             $operator =func_get_arg(1);
             if (is_numeric(array_search($operator, $this->condition))) {
                 $this->whereby .=' or '.self::sanitize(func_get_arg(0))
-                    .self::sanitize( $operator) . '\''
+                    .' '. $operator . ' \''
                     . self::sanitize(func_get_arg(2)) . '\'';
             } else {
                 static::$response["status"] = "error";
@@ -287,7 +287,6 @@ class Builder extends Connect
      */
     protected function fetch($sql)
     {
-        $sql=self::sanitize($sql); //sanitize the query
         try {
             try {
                 $stm = Connect::getConn()->prepare($sql);
