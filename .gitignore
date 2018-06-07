@@ -1,6 +1,5 @@
-./devtests
+devtests
 /vendor/
 .idea/
-./idea/
 tests.php
 .env
