@@ -264,6 +264,9 @@ class Builder extends Connect
             $query = $query . ' WHERE ' . $this->whereby;
         }
 
+        if (!empty($this->order)) {
+            $query .= $this->order;
+        }
 
         if (!empty($limit)) {
             $query = $query . ' LIMIT ' . $limit;
@@ -272,9 +275,7 @@ class Builder extends Connect
             $query = $query . ' OFFSET ' . $offset;
         }
 
-        if (!empty($this->order)) {
-            $query .= $this->order;
-        }
+
 
           return  $this->fetch($query);
     }
