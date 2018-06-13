@@ -690,4 +690,15 @@ class Builder extends Connect
         }
 
     }
+
+    /**
+     * Raw select using query passed as parameter
+     * @param $query : the query to select record(s)
+     * @return array|string
+     */
+    public static function rawSelect($query)
+    {
+        $b=new Builder();
+        return $b->fetch($query);
+    }
 }
