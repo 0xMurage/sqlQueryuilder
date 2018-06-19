@@ -47,7 +47,7 @@ The code depends on the query being executed but on successful query, a code of 
         ],
      "code":200
     }
-
+Other response codes are [here](ReturnCodes.md).
 All queries that normally do not fetch any value from the database on successful execution will return
 
     
@@ -67,7 +67,7 @@ or to just select everything in the table
           ->all();
       
  
-To select only fifty columns
+To select only fifty records
     
      Builder::table('test')
             ->get(50);
