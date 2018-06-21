@@ -21,7 +21,7 @@ class Builder extends Connect
     private $values = [];
     private $whereby;
     private $order;
-    private $condition = ['<', '>', '<>', '!=', '<=', '>=', '='];
+    private $condition = ['<', '>', '<>', '!=', '<=', '>=', '=','is'];
 
 
     /**
@@ -108,7 +108,7 @@ class Builder extends Connect
     {
         if (func_num_args() == 3) {
 
-            $operator = func_get_arg(1);
+            $operator = strtolower(func_get_arg(1));
             if (is_numeric(array_search($operator, $this->condition))) {
                 $this->whereby = self::sanitize(func_get_arg(0))
                     .' '.$operator .' \''
@@ -139,7 +139,7 @@ class Builder extends Connect
     public function andWhere($param){
         if (func_num_args() == 3) {
 
-            $operator = func_get_arg(1);
+            $operator = strtolower(func_get_arg(1));
             if (is_numeric(array_search($operator, $this->condition))) {
                 $this->whereby .=' and '.self::sanitize(func_get_arg(0))
                     .' '. $operator. ' \''
@@ -170,7 +170,7 @@ class Builder extends Connect
     public function orWhere($param){
         if (func_num_args() == 3) {
 
-            $operator =func_get_arg(1);
+            $operator =strtolower(func_get_arg(1));
             if (is_numeric(array_search($operator, $this->condition))) {
                 $this->whereby .=' or '.self::sanitize(func_get_arg(0))
                     .' '. $operator . ' \''
