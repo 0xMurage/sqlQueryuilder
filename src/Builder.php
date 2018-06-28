@@ -22,6 +22,7 @@ class Builder extends Connect
     private $whereby;
     private $order;
     private $condition = ['<', '>', '<>', '!=', '<=', '>=', '=','is'];
+    private $updateOrInsert=false;
 
 
     /**
@@ -369,6 +370,15 @@ class Builder extends Connect
     }
 
     /**
+     *Sets update if duplicate is found to true when inserting a record
+     * @return $this
+     */
+    public  function insertOrUpdate()
+    {
+        $this->updateOrInsert=true;
+        return $this;
+    }
+    /**
      * Sets the values to be inserted
      * @param $values
      * @return $this|string
@@ -459,6 +469,15 @@ class Builder extends Connect
             'INSERT INTO ' . self::$table .
             ' (' . $this->columns .
             ') VALUES(' . implode(',', $columnParam) . ')';
+
+            $ext=array_map(function ($column){
+                return $column.'=VALUES('.$column.')';
+            },explode(',',$this->columns));
+            if($this->updateOrInsert){ //if update when duplicate is found is set to true
+                $sql.=' ON DUPLICATE KEY UPDATE '.implode(',',$ext);
+            }
+            var_dump($sql);
+            die();
 
         try {
             $stm = Connect::getConn()->prepare($sql);
