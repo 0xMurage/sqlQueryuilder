@@ -476,8 +476,6 @@ class Builder extends Connect
             if($this->updateOrInsert){ //if update when duplicate is found is set to true
                 $sql.=' ON DUPLICATE KEY UPDATE '.implode(',',$ext);
             }
-            var_dump($sql);
-            die();
 
         try {
             $stm = Connect::getConn()->prepare($sql);
