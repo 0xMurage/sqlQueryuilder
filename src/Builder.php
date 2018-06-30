@@ -21,6 +21,7 @@ class Builder extends Connect
     private $values = [];
     private $whereby;
     private $order;
+    private $groupby;
     private $condition = ['<', '>', '<>', '!=', '<=', '>=', '=','is'];
     private $updateOrInsert=false;
 
@@ -220,6 +221,21 @@ class Builder extends Connect
         return $this;
     }
 
+    public function groupBy($columns)
+    {
+        //check if columns were passed as individual string parameters
+
+        if (func_num_args() > 1) {
+            $this->groupby = $this->columnize(func_get_args());
+        } else {
+            //check if a single array of columns was passed(a hack)
+            $this->groupby = is_array($columns) ? $this->columnize($columns)
+                : self::sanitize($columns);
+        }
+
+        return $this;
+    }
+
     /**
      * Fetch records form database
      * @param int $limit :optional limit of records to be retrieved
@@ -267,6 +283,10 @@ class Builder extends Connect
 
         if (!empty($this->order)) {
             $query .= $this->order;
+        }
+
+        if(!empty($this->groupby)){
+            $query.=' GROUP BY '.$this->groupby;
         }
 
         if (!empty($limit)) {
@@ -357,6 +377,11 @@ class Builder extends Connect
             if (!empty($this->order)) {
                 $query .= $this->order;
             }
+
+            if(!empty($this->groupby)){
+                $query.=' GROUP BY '.$this->groupby;
+            }
+
             //execute the query and return the data or error message
               return  $this->fetch($query);
 
