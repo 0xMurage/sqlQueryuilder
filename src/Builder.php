@@ -280,14 +280,14 @@ class Builder extends Connect
 
             $query = $query . ' WHERE ' . $this->whereby;
         }
+        if(!empty($this->groupby)){
+            $query.=' GROUP BY '.$this->groupby;
+        }
 
         if (!empty($this->order)) {
             $query .= $this->order;
         }
 
-        if(!empty($this->groupby)){
-            $query.=' GROUP BY '.$this->groupby;
-        }
 
         if (!empty($limit)) {
             $query = $query . ' LIMIT ' . $limit;
@@ -374,13 +374,15 @@ class Builder extends Connect
             $query = /** @lang text */
                 "SELECT * FROM {$table}";
 
-            if (!empty($this->order)) {
-                $query .= $this->order;
-            }
 
             if(!empty($this->groupby)){
                 $query.=' GROUP BY '.$this->groupby;
             }
+
+            if (!empty($this->order)) {
+                $query .= $this->order;
+            }
+
 
             //execute the query and return the data or error message
               return  $this->fetch($query);
