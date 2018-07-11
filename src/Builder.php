@@ -2,7 +2,7 @@
 
 /**
  * All rights reserved.
- * User: hello@mimidots.com
+ * User: holla@mimidots.com
  * Date: 29-Oct-17
  * Time: 09:42
  */
