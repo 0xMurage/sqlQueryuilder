@@ -1,8 +1,6 @@
-[![Build Status][travis-image]][travis]
-[![Coverage Status][coveralls-image]][coveralls]
-[![Latest Stable Version][packagist-image-1]][packagist-1]
-[![Total Downloads][packagist-image-2]][packagist-2]
-[![Dependency Status][versioneye-image]][versioneye]
+[![Latest Stable Version](https://poser.pugx.org/murage/sqlddl/v/stable)](https://packagist.org/packages/murage/sqlddl)
+[![Total Downloads](https://poser.pugx.org/murage/sqlddl/downloads)](https://packagist.org/packages/murage/sqlddl)
+[![License](https://poser.pugx.org/murage/sqlddl/license)](https://packagist.org/packages/murage/sqlddl)
 
 # **Installation**
 First ensure the PHP version is greater or equal to 7
