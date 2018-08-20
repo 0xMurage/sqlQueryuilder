@@ -6,17 +6,17 @@ To include the library in an existing project using [composer](https://getcompos
     composer require murage/sqlddl
   or in composer.json add  as dependency
  
-    "murage/sqlddl" : "~1.0.0"
+"murage/sqlddl" : "^1.0.0"
 
 This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) and requires .env file at root of the project. To get started include the following ENV variables to be able to get started (change as per your database connection) 
-
-        DB_CONNECTION=mysql
-        DB_HOST=127.0.0.1 
-        DB_PORT=3306
-        DB_NAME=mydatabase
-        DB_USERNAME=secret
-        DB_PASSWORD=secret
-  
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1 
+DB_PORT=3306
+DB_NAME=mydatabase
+DB_USERNAME=secret
+DB_PASSWORD=secret
+```
   where  
   `DB_NAME`=your database name
   
@@ -118,3 +118,5 @@ To drop table test
     
     Builder::table('test')
     ->drop();
+    
+An up-to date documentation is cooking 🍴
