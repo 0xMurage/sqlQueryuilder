@@ -8,7 +8,8 @@ To include the library in an existing project using [composer](https://getcompos
  
 "murage/sqlddl" : "^1.0.0"
 
-This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) and requires .env file at root of the project. To get started include the following ENV variables to be able to get started (change as per your database connection) 
+This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) and requires .env file at root of the project (env file does not have file name only extension .env; an example is provided).
+To get started include the following ENV variables to be able to get started (change as per your database connection) 
 ```
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1 
@@ -119,4 +120,4 @@ To drop table test
     Builder::table('test')
     ->drop();
     
-An up-to date documentation is cooking 🍴
+##### An up-to date documentation is cooking  🍴
