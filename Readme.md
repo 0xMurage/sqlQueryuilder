@@ -1,6 +1,7 @@
 [![Latest Stable Version](https://poser.pugx.org/murage/sqlddl/v/stable)](https://packagist.org/packages/murage/sqlddl)
 [![Total Downloads](https://poser.pugx.org/murage/sqlddl/downloads)](https://packagist.org/packages/murage/sqlddl)
 [![License](https://poser.pugx.org/murage/sqlddl/license)](https://packagist.org/packages/murage/sqlddl)
+[![Coverage Status](https://coveralls.io/repos/github/mimidotsuser/sqlQueryuilder/badge.svg?branch=master)](https://coveralls.io/github/mimidotsuser/sqlQueryuilder?branch=master)
 
 # **Installation**
 First ensure the PHP version is greater or equal to 7
