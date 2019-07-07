@@ -416,7 +416,7 @@ class Builder extends Connect
             if (func_num_args() > 0 && !is_array($values)) {
                 $this->values = array_merge($this->values, self::sanitizeAV(func_get_args()));
             } else if (is_array($values)) {
-                $this->values = self::sanitize($values);
+                $this->values = self::sanitizeAV($values);
             } else {
                 static::$response["status"] = "error";
                 static::$response["response"] = "unrecognized parameter options in the insert values";
