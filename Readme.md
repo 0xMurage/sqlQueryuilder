@@ -1,3 +1,8 @@
+[![Latest Stable Version](https://poser.pugx.org/murage/sqlddl/v/stable)](https://packagist.org/packages/murage/sqlddl)
+[![Total Downloads](https://poser.pugx.org/murage/sqlddl/downloads)](https://packagist.org/packages/murage/sqlddl)
+[![License](https://poser.pugx.org/murage/sqlddl/license)](https://packagist.org/packages/murage/sqlddl)
+[![Coverage Status](https://coveralls.io/repos/github/mimidotsuser/sqlQueryuilder/badge.svg?branch=master)](https://coveralls.io/github/mimidotsuser/sqlQueryuilder?branch=master)
+
 # **Installation**
 First ensure the PHP version is greater or equal to 7
 
@@ -6,17 +11,18 @@ To include the library in an existing project using [composer](https://getcompos
     composer require murage/sqlddl
   or in composer.json add  as dependency
  
-    "murage/sqlddl" : "~1.0.0"
+"murage/sqlddl" : "^1.0.0"
 
-This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) and requires .env file at root of the project. To get started include the following ENV variables to be able to get started (change as per your database connection) 
-
-        DB_CONNECTION=mysql
-        DB_HOST=127.0.0.1 
-        DB_PORT=3306
-        DB_NAME=mydatabase
-        DB_USERNAME=secret
-        DB_PASSWORD=secret
-  
+This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) and requires .env file at root of the project (env file does not have file name only extension .env; an example is provided).
+To get started include the following ENV variables to be able to get started (change as per your database connection) 
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1 
+DB_PORT=3306
+DB_NAME=mydatabase
+DB_USERNAME=secret
+DB_PASSWORD=secret
+```
   where  
   `DB_NAME`=your database name
   
@@ -118,3 +124,5 @@ To drop table test
     
     Builder::table('test')
     ->drop();
+    
+##### An up-to date documentation is cooking  🍴
