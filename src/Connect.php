@@ -44,6 +44,9 @@ class Connect
 
             // set the PDO error mode to exception
             self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            //set it to use native prepared queries
+            self::$conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
         } catch (PDOException $e) {
 
             self::$response['status'] = 'error';
