@@ -13,13 +13,15 @@
 
     "require": {
         "php": ">=7.1",
-        "vlucas/phpdotenv": "^2.4"
+        "vlucas/phpdotenv": ">2.4 <3.0.0",
+        "ext-json": "*",
+        "ext-pdo": "*"
     },
 
     "autoload": {
-        "classmap": [
-            "./"
-        ]
+        "psr-4": {
+            "QueryBuilder\\":["src/"]
+        }
     },
     "scripts": {
         "post-root-package-install": [

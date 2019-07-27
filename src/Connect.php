@@ -24,10 +24,10 @@ class Connect
 
     private static function makeConnection()
     {
-        $dotenv = new Dotenv('.'); //load .env file from source root folder
+        $dotenv = new Dotenv(getcwd()); //load .env file from source root folder
         $dotenv->load();
 
-        /*ENSURE THE FOLLOWING ARE PROVIDEND*/
+        /*ENSURE THE FOLLOWING ARE PROVIDED*/
         $dotenv->required(['DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USERNAME', 'DB_PASSWORD']);
 
         /*CHECK TO ENSURE THERE ARE NOT EMPTY*/
