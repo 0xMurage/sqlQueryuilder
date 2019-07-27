@@ -24,7 +24,7 @@ class Connect
 
     private static function makeConnection()
     {
-        $dotenv = new Dotenv(getcwd()); //load .env file from source root folder
+        $dotenv = Dotenv::create(getcwd()); //load .env file from source root folder
         $dotenv->load();
 
         /*ENSURE THE FOLLOWING ARE PROVIDED*/
