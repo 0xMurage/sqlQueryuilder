@@ -11,7 +11,7 @@ To include the library in an existing project using [composer](https://getcompos
     composer require murage/sqlddl
   or in composer.json add  as dependency
  
-"murage/sqlddl" : "^1.0.0"
+"murage/sqlddl" : "^2.1.0"
 
 This library is dependent on [PHP dotenv](https://github.com/vlucas/phpdotenv) and requires .env file at root of the project (env file does not have file name only extension .env; an example is provided).
 To get started include the following ENV variables to be able to get started (change as per your database connection) 
