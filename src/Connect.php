@@ -16,13 +16,25 @@ use PDOException;
 class Connect
 {
 
+    /**
+     * @var PDO
+     */
     private static $conn;
-    protected static $response =
-        array("status" => "success",
-            "response" => "success",
-            "code" => 200);
+    /**
+     * @var Response
+     */
+    public static $response;
 
-    private static function makeConnection()
+    /**
+     * Connect constructor.
+     */
+    public function __construct()
+    {
+        static::$response=new Response(QueryBuilderResponses::SUCCESS_STATUS,200,'success');
+    }
+
+
+    private static function openConnection()
     {
         $dotenv = Dotenv::create(getcwd()); //load .env file from source root folder
         $dotenv->load();
@@ -49,30 +61,28 @@ class Connect
 
         } catch (PDOException $e) {
 
-            self::$response['status'] = 'error';
             if($e->getCode()==2002){
-                self::$response['response'] = "Lost connection with the database.";
+                self::$response=QueryBuilderResponses::dbConnectionLost();
             }
             elseif($e->getCode()==1044 ||$e->getCode()==1045){
-                self::$response['response'] = "Incorrect database access credentials.";
+                self::$response=QueryBuilderResponses::incorrectDBCredentials();
             }else{
-                self::$response['response'] = "Database access error.";
+                self::$response=QueryBuilderResponses::genericDBConnectionError();
+                self::$response->setSystemErrorCode($e->getCode());
+                self::$response->setSystemErrorMessage($e->getMessage());
             }
 
-            self::$response['code'] = $e->getCode();
         }
     }
 
 
     /**
-     * @return mixed
+     * @return PDO|null
      */
     protected static function getConn()
     {
-        self::makeConnection();
-        PDO:
-        $conn = self::$conn;
-        return $conn;
+        self::openConnection();
+        return self::$conn;
     }
 
     /**
@@ -83,7 +93,7 @@ class Connect
      */
     protected static function terminate($data = null)
     {
-        if (static::$response["status"] != "success") {
+        if (static::$response->getStatus() === QueryBuilderResponses::ERROR_STATUS) {
             return json_encode(static::$response);
         }
         return json_encode($data);

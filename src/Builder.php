@@ -11,18 +11,45 @@ use Exception;
 use PDO;
 use PDOException;
 use QueryBuilder\Connect;
+use QueryBuilder\QueryBuilderResponses;
 use RecursiveArrayIterator;
 
+/**
+ * Class Builder
+ * @package QueryBuilder
+ */
 class Builder extends Connect
 {
 
+    /**
+     * @var string
+     */
     private static $table;
+
     private $columns;
+    /**
+     * @var array
+     */
     private $values = [];
+    /**
+     * @var string
+     */
     private $whereby;
+    /**
+     * @var string
+     */
     private $order;
+    /**
+     * @var string
+     */
     private $groupby;
+    /**
+     * @var array
+     */
     private $condition = ['<', '>', '<>', '!=', '<=', '>=', '=','is'];
+    /**
+     * @var bool
+     */
     private $updateOrInsert=false;
 
 
@@ -35,8 +62,9 @@ class Builder extends Connect
     {
         //as all calls will start with this function, first check if database connection has being established
         if(Connect::getConn()==null){
+
+            exit(self::terminate());
             //lets just return the object of the class in-case of connection error (developer will handle the rest)
-            return new static ;
         }
         self::$table = self::sanitize($table);
 
@@ -58,7 +86,7 @@ class Builder extends Connect
 
     /**
      * Sets which columns to select
-     * @param string $columns
+     * @param  $columns
      *
      * @return $this
      */
@@ -104,6 +132,7 @@ class Builder extends Connect
     /**
      * Add conditional evaluation of where clause
      * $column, $operator = "", $value
+     * @param $params
      * @return $this
      */
     public function where($params)
@@ -116,17 +145,13 @@ class Builder extends Connect
                     .' '.$operator .' \''
                     . self::sanitize(func_get_arg(2)). '\'';
             } else {
-                static::$response["status"] = "error";
-                static::$response["response"] = "Invalid condition provided in where function";
-                static::$response["code"] = 7000;
+                static::$response=QueryBuilderResponses::invalidQueryCondition();
             }
         } else if (func_num_args() == 2) {
             $this->whereby =self::sanitize(func_get_arg(0)) . ' = \''
                 . self::sanitize(func_get_arg(1)). '\'';
         } else {
-            static::$response["status"] = "error";
-            static::$response["response"] = "Invalid parameters provided in where function";
-            static::$response["code"] = 7001;
+            static::$response=QueryBuilderResponses::invalidQueryParams();
         }
 
         return $this;
@@ -147,17 +172,13 @@ class Builder extends Connect
                     .' '. $operator. ' \''
                     . self::sanitize(func_get_arg(2)) . '\'';
             } else {
-                static::$response["status"] = "error";
-                static::$response["response"] = "Invalid condition provided in where function";
-                static::$response["code"] = 7000;
+                static::$response=QueryBuilderResponses::invalidQueryCondition();
             }
         } else if (func_num_args() == 2) {
             $this->whereby .= ' and '.self::sanitize(func_get_arg(0)). ' = \''
                 .self::sanitize(func_get_arg(1) ). '\'';
         } else {
-            static::$response["status"] = "error";
-            static::$response["response"] = "Invalid parameters provided in where function";
-            static::$response["code"] = 7001;
+            static::$response=QueryBuilderResponses::invalidQueryParams();
         }
 
         return $this;
@@ -178,17 +199,13 @@ class Builder extends Connect
                     .' '. $operator . ' \''
                     . self::sanitize(func_get_arg(2)) . '\'';
             } else {
-                static::$response["status"] = "error";
-                static::$response["response"] = "Invalid condition provided in where function";
-                static::$response["code"] = 7000;
+                static::$response=QueryBuilderResponses::invalidQueryCondition();
             }
         } else if (func_num_args() == 2) {
             $this->whereby .= ' or '.self::sanitize(func_get_arg(0)) . ' = \''
                 . self::sanitize(func_get_arg(1)) . '\'';
         } else {
-            static::$response["status"] = "error";
-            static::$response["response"] = "Invalid parameters provided in where function";
-            static::$response["code"] = 7001;
+            static::$response=QueryBuilderResponses::invalidQueryParams();
         }
 
         return $this;
@@ -207,9 +224,7 @@ class Builder extends Connect
 
         /*check if the sort method passed is valid */
         if (!(hash_equals('DESC',$sort) || hash_equals('ASC',$sort))){
-            static::$response["status"] = "error";
-            static::$response["response"] = "The sort order in order by clause is invalid";
-            static::$response['code'] = 6050;
+            static::$response=QueryBuilderResponses::invalidSortOrder();
             return static::terminate(static::$response);
         }
 
@@ -221,6 +236,10 @@ class Builder extends Connect
         return $this;
     }
 
+    /**
+     * @param $columns string
+     * @return $this
+     */
     public function groupBy($columns)
     {
         //check if columns were passed as individual string parameters
@@ -246,24 +265,20 @@ class Builder extends Connect
     {
 
         //check if there is an error
-        if (static::$response['status'] == "error") {
+        if (static::$response->getStatus() === QueryBuilderResponses::ERROR_STATUS) {
            return static::terminate(static::$response);
         }
 
         //check if the limit is a number
         if (!is_numeric($limit)) {
-            static::$response["status"] = "error";
-            static::$response["response"] = "Parameter limit should be numeric at function get()";
-            static::$response["code"] = 6000;
+            static::$response=QueryBuilderResponses::invalidSelectionLimit();
 
             return static::terminate(static::$response);
         }
 
         //check if the offset is a number
         if (!is_numeric($offset)) {
-            static::$response["status"] = "error";
-            static::$response["response"] = "Parameter offset should be numeric at function get()";
-            static::$response["code"] = 6001;
+            static::$response=QueryBuilderResponses::invalidSelectionOffset();
 
             return static::terminate(static::$response);
         }
@@ -313,24 +328,27 @@ class Builder extends Connect
             try {
                 $stm = Connect::getConn()->prepare($sql);
             } catch (Exception $e) {
-                static::$response["status"] = "error";
-                static::$response["response"] = $e->getMessage();
-                static::$response['code'] = $e->getCode();
+                static::$response=QueryBuilderResponses::genericQueryExecError();
+                self::$response->setSystemErrorCode($e->getCode());
+                self::$response->setSystemErrorMessage($e->getMessage());
+
                return static::terminate(static::$response);
 
             }
             try {
                 $stm->execute();
             } catch (Exception $e) {
-                static::$response["status"] = "error";
-                static::$response["response"] = $e->getMessage();
-                static::$response['code'] = $e->getCode();
+                static::$response=QueryBuilderResponses::genericQueryExecError();
+                self::$response->setSystemErrorCode($e->getCode());
+                self::$response->setSystemErrorMessage($e->getMessage());
+
                return static::terminate(static::$response);
             }
         } catch (Exception $e) {
-            static::$response["status"] = "error";
-            static::$response["response"] = $e->getMessage();
-            static::$response['code'] = $e->getCode();
+            static::$response=QueryBuilderResponses::genericQueryExecError();
+            self::$response->setSystemErrorCode($e->getCode());
+            self::$response->setSystemErrorMessage($e->getMessage());
+
            return static::terminate(static::$response);
 
         }
@@ -343,21 +361,20 @@ class Builder extends Connect
             }
 
             if ($data == null) {
-                static::$response["status"] = "success";
-                static::$response["response"] = Null;
-                static::$response['code'] = 300;
+                static::$response=QueryBuilderResponses::onEmptyRecordSetSelect();
                return static::terminate(static::$response);
             }
-            static::$response["status"] = "success";
-            static::$response["response"] = $data;
-            static::$response['code'] = 200;
+            static::$response=QueryBuilderResponses::onRecordSetSelect();
+            static::$response->setResponse( $data);
+
             return static::terminate(static::$response);
 
 
         } catch (PDOException $e) {
-            static::$response["status"] = "error";
-            static::$response["response"] = $e->getMessage();
-            static::$response["code"] = $e->getCode();
+            static::$response=QueryBuilderResponses::genericQueryExecError();
+            self::$response->setSystemErrorCode($e->getCode());
+            self::$response->setSystemErrorMessage($e->getMessage());
+
            return static::terminate(static::$response);
         }
 
@@ -389,9 +406,8 @@ class Builder extends Connect
 
 
         } else {
-            static::$response["status"] = "error";
-            static::$response["response"] = "Table name cannot be empty";
-            static::$response["code"] = 5000;
+            static::$response=QueryBuilderResponses::tableNameError();
+
             return static::terminate(static::$response);
         }
     }
@@ -415,18 +431,18 @@ class Builder extends Connect
         try {
             if (func_num_args() > 0 && !is_array($values)) {
                 $this->values = array_merge($this->values, self::sanitizeAV(func_get_args()));
-            } else if (is_array($values)) {
+            } else if (is_array($values) && count($values)>0) {
                 $this->values = self::sanitizeAV($values);
             } else {
-                static::$response["status"] = "error";
-                static::$response["response"] = "unrecognized parameter options in the insert values";
-                static::$response["code"] = 7004;
-                return static::terminate(static::$response);
+                static::$response=QueryBuilderResponses::invalidValueOnInsert();
+
+                exit(static::terminate(static::$response));
             }
         } catch (Exception $e) {
-            static::$response["status"] = "error";
-            static::$response["response"] = $e->getMessage();
-            static::$response["code"] = $e->getCode();
+            static::$response=QueryBuilderResponses::genericQueryExecError();
+            self::$response->setSystemErrorCode($e->getCode());
+            self::$response->setSystemErrorMessage($e->getMessage());
+
            return static::terminate(static::$response);
         }
 
@@ -435,7 +451,7 @@ class Builder extends Connect
 
     /**
      * Sets the column to which the values will be inserted
-     * @param $columns
+     * @param string|array $columns
      * @return string
      */
     public function into($columns)
@@ -451,9 +467,10 @@ class Builder extends Connect
                 );
             } catch (Exception $e) {
 
-                static::$response["status"] = "error";
-                static::$response["response"] = "Unrecognized characters. Please refer to documentation on how to insert a record";
-                static::$response["code"] = 4001;
+                static::$response=QueryBuilderResponses::invalidColumnOnInsert();
+                self::$response->setSystemErrorCode($e->getCode());
+                self::$response->setSystemErrorMessage($e->getMessage());
+
                return static::terminate(static::$response);
 
             }
@@ -466,9 +483,8 @@ class Builder extends Connect
         } else if ($colStringCount == $valuesCount) {
             $this->columns = $columns;
         } else {
-            static::$response["status"] = "error";
-            static::$response["response"] = "Columns count does not equal the values count";
-            static::$response['code'] = 4005;
+            static::$response=QueryBuilderResponses::invalidInsertQuery();
+
            return static::terminate(static::$response);
         }
 
@@ -483,7 +499,7 @@ class Builder extends Connect
     protected function doInsert()
     {
         //check if there is an error from previous function execution
-        if (static::$response["status"] == "error") {
+        if (static::$response->getStatus() == QueryBuilderResponses::ERROR_STATUS) {
            return static::terminate(static::$response);
         }
         //convert each columns to ? parameter
@@ -507,24 +523,22 @@ class Builder extends Connect
         try {
             $stm = Connect::getConn()->prepare($sql);
         } catch (Exception $e) {
-            static::$response["status"] = "error";
-            static::$response["response"] = $e->getMessage();
-            static::$response["code"] = $e->getCode();
-           return static::terminate(static::$response);
+            static::$response=QueryBuilderResponses::genericQueryExecError();
+            self::$response->setSystemErrorCode($e->getCode());
+            self::$response->setSystemErrorMessage($e->getMessage());
+
+            return static::terminate(static::$response);
         }
 
         try {
             $stm->execute($this->values);
 
-            static::$response["status"] = "success";
-            static::$response["response"] = "success";
-            static::$response["code"] = 200;
-
-            return static::terminate(static::$response);
+            return static::terminate(QueryBuilderResponses::onRecordCreate());
         } catch (Exception $e) {
-            static::$response["status"] = "error";
-            static::$response["response"] = $e->getMessage();
-            static::$response["code"] = $e->getCode();
+            static::$response=QueryBuilderResponses::genericQueryExecError();
+            self::$response->setSystemErrorCode($e->getCode());
+            self::$response->setSystemErrorMessage($e->getMessage());
+
             return static::terminate(static::$response);
         }
     }
@@ -563,9 +577,10 @@ class Builder extends Connect
                     $stm = Connect::getConn()->prepare($query);
                 } catch (Exception $e) {
 
-                    static::$response["status"] = "error";
-                    static::$response["response"] = $e->getMessage();
-                    static::$response["code"]=$e->getCode();
+                    static::$response=QueryBuilderResponses::genericQueryExecError();
+                    self::$response->setSystemErrorCode($e->getCode());
+                    self::$response->setSystemErrorMessage($e->getMessage());
+
                     return self::terminate(static::$response);
                 }
 
@@ -573,29 +588,25 @@ class Builder extends Connect
 
                     $stm->execute($this->values);
 
-                    static::$response["status"] = "success";
-                    static::$response["response"] = "success";
-                    static::$response["code"] = 200;
+                    static::$response=QueryBuilderResponses::onRecordUpdate();
 
                     return static::terminate(static::$response);
 
                 } catch (Exception $e) {
-                    static::$response["status"] = "error";
-                    static::$response["response"] = $e->getMessage();
-                    static::$response["code"]=$e->getCode();
+                    static::$response=QueryBuilderResponses::genericQueryExecError();
+                    self::$response->setSystemErrorCode($e->getCode());
+                    self::$response->setSystemErrorMessage($e->getMessage());
+
                     return self::terminate(static::$response);
                 }
             }
 
-            static::$response["status"] = "error";
-            static::$response["response"] = "Associative array expected in update function but sequential array passed";
-            static::$response["code"]=6501;
+            static::$response=QueryBuilderResponses::invalidUpdateQuery();
+
             return self::terminate(static::$response);
 
         }
-        static::$response["status"] = "error";
-        static::$response["response"] = "Unrecognized data. Associative array expected in update function";
-        static::$response["code"]=6500;
+        static::$response=QueryBuilderResponses::invalidUpdateQuery();;
         return self::terminate(static::$response);
     }
 
@@ -636,14 +647,14 @@ class Builder extends Connect
         try {
             $this->exec($query);
 
-            static::$response["status"] = "success";
-            static::$response["response"] = 'success';
-            static::$response['code'] = 200;
+            static::$response=QueryBuilderResponses::onRecordDelete();
+
             return static::terminate(static::$response);
         } catch (Exception $e) {
-            static::$response["status"] = "error";
-            static::$response["response"] = $e->getMessage();
-            static::$response['code'] = $e->getCode();
+            static::$response=QueryBuilderResponses::genericQueryExecError();
+            self::$response->setSystemErrorCode($e->getCode());
+            self::$response->setSystemErrorMessage($e->getMessage());
+
             return static::terminate(static::$response);
         }
     }
@@ -659,9 +670,9 @@ class Builder extends Connect
         try {
             Connect::getConn()->exec($query);
         } catch (Exception $e) {
-            static::$response["status"] = "error";
-            static::$response["response"] = $e->getMessage();
-            static::$response["code"] = $e->getCode();
+            static::$response=QueryBuilderResponses::genericQueryExecError();
+            static::$response->setSystemErrorMessage($e->getMessage());
+            static::$response->setSystemErrorCode($e->getCode());
 
             return static::terminate(static::$response);
         }
@@ -679,16 +690,14 @@ class Builder extends Connect
         try {
             $this->exec($sql);
 
-            static::$response["status"] = "success";
-            static::$response["response"] = "success";
-            static::$response["code"] = 200;
+            static::$response=QueryBuilderResponses::onTableTruncate();
 
             return static::terminate(static::$response);
 
         } catch (Exception $e) {
-            static::$response["status"] = "error";
-            static::$response["response"] = $e->getMessage();
-            static::$response["code"] = $e->getCode();
+            static::$response=QueryBuilderResponses::genericQueryExecError();
+            self::$response->setSystemErrorCode($e->getCode());
+            self::$response->setSystemErrorMessage($e->getMessage());
 
             return static::terminate(static::$response);
         }
@@ -699,9 +708,7 @@ class Builder extends Connect
      */
     private static function valTable(){
         if(static::$table==null || ! is_string(static::$table)){
-            static::$response["status"] = "error";
-            static::$response["response"] = "check the table name provided";
-            static::$response["code"]=5000;
+            static::$response=QueryBuilderResponses::tableNameError();
             return self::terminate(static::$response);
 
         }else{
@@ -722,14 +729,16 @@ class Builder extends Connect
             "DROP TABLE " . self::$table;
         try {
             $this->exec($sql);
-            static::$response["status"] = "success";
-            static::$response["response"] = "success";
+
+            self::$response=QueryBuilderResponses::onTableDelete();
+
             return self::terminate(static::$response);
 
         } catch (Exception $e) {
-            static::$response["status"] = "error";
-            static::$response["response"] = $e->getMessage();
-            static::$response["code"] = $e->getCode();
+            static::$response=QueryBuilderResponses::genericQueryExecError();
+            self::$response->setSystemErrorCode($e->getCode());
+            self::$response->setSystemErrorMessage($e->getMessage());
+
             return static::terminate(static::$response);
         }
 
