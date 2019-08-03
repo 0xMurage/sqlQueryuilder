@@ -6,12 +6,10 @@
  * Date: 29-Oct-17
  * Time: 09:42
  */
-namespace mysqlBuilder;
+namespace QueryBuilder;
 use Exception;
 use PDO;
 use PDOException;
-use QueryBuilder\Connect;
-use QueryBuilder\QueryBuilderResponses;
 use RecursiveArrayIterator;
 
 /**

@@ -1,11 +1,11 @@
 {
-    "name": "mimidots/query-builder",
+    "name": "murage/sqlddl",
     "description": "Simple SQL Query builder. Worry less about the database connections and queries..",
     "type": "library",
     "authors": [
         {
-            "name": "mimidots",
-            "email": "hello@mimidots.com"
+            "name": "murage@mimidots",
+            "email": "murage@mimidots.com"
         }
     ],
     "minimum-stability": "stable",
@@ -20,8 +20,7 @@
 
     "autoload": {
         "psr-4": {
-            "QueryBuilder\\":["src/"],
-            "mysqlBuilder\\":["src/"]
+            "QueryBuilder\\":["src/"]
         }
     },
     "scripts": {
