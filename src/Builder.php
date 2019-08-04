@@ -533,7 +533,12 @@ class Builder extends Connect
 
             return static::terminate(QueryBuilderResponses::onRecordCreate());
         } catch (Exception $e) {
-            static::$response=QueryBuilderResponses::genericQueryExecError();
+                if($e->getCode()===23000){
+                    static::$response=QueryBuilderResponses::duplicateInsertError();
+                }else {
+                    static::$response = QueryBuilderResponses::genericQueryExecError();
+                }
+
             self::$response->setSystemErrorCode($e->getCode());
             self::$response->setSystemErrorMessage($e->getMessage());
 

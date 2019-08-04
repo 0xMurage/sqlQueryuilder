@@ -130,4 +130,11 @@ class QueryBuilderResponses
         return new Response(self::SUCCESS_STATUS, 204, 'Table truncated successfully');
     }
 
+    public static function duplicateInsertError()
+    {
+        return new Response(self::ERROR_STATUS, 422,
+            'Duplicates detected. Could not insert the record');
+
+    }
+
 }
