@@ -44,7 +44,7 @@ class Builder extends Connect
     /**
      * @var array
      */
-    private $condition = ['<', '>', '<>', '!=', '<=', '>=', '=','is'];
+    private $condition = ['<', '>', '<>', '!=', '<=', '>=', '=','IS','IS NOT','<=>'];
     /**
      * @var bool
      */
@@ -76,6 +76,7 @@ class Builder extends Connect
      */
     private static function sanitize($data)
     {
+        if(is_null($data)){return NULL;}
         $data = trim($data);
         $data = stripslashes($data);
         $data = htmlspecialchars($data);
@@ -137,17 +138,18 @@ class Builder extends Connect
     {
         if (func_num_args() == 3) {
 
-            $operator = strtolower(func_get_arg(1));
+            $operator = strtoupper(func_get_arg(1));
             if (is_numeric(array_search($operator, $this->condition))) {
                 $this->whereby = self::sanitize(func_get_arg(0))
-                    .' '.$operator .' \''
-                    . self::sanitize(func_get_arg(2)). '\'';
+                    .' '.$operator.' '.(is_null(self::sanitize(func_get_arg(2)))?' NULL ':
+                    '\'' . self::sanitize(func_get_arg(2)). '\'');
             } else {
                 static::$response=QueryBuilderResponses::invalidQueryCondition();
             }
         } else if (func_num_args() == 2) {
-            $this->whereby =self::sanitize(func_get_arg(0)) . ' = \''
-                . self::sanitize(func_get_arg(1)). '\'';
+            $this->whereby =self::sanitize(func_get_arg(0)) .
+                (is_null( self::sanitize(func_get_arg(1)))?' IS NULL':
+                ' = \'' . self::sanitize(func_get_arg(1)). '\'');
         } else {
             static::$response=QueryBuilderResponses::invalidQueryParams();
         }
@@ -164,17 +166,18 @@ class Builder extends Connect
     public function andWhere($param){
         if (func_num_args() == 3) {
 
-            $operator = strtolower(func_get_arg(1));
+            $operator = strtoupper(func_get_arg(1));
             if (is_numeric(array_search($operator, $this->condition))) {
                 $this->whereby .=' and '.self::sanitize(func_get_arg(0))
-                    .' '. $operator. ' \''
-                    . self::sanitize(func_get_arg(2)) . '\'';
+                    .' '. $operator. (is_null(self::sanitize(func_get_arg(2)) )?' NULL':
+                        ' \'' . self::sanitize(func_get_arg(2)) . '\'');
             } else {
                 static::$response=QueryBuilderResponses::invalidQueryCondition();
             }
         } else if (func_num_args() == 2) {
-            $this->whereby .= ' and '.self::sanitize(func_get_arg(0)). ' = \''
-                .self::sanitize(func_get_arg(1) ). '\'';
+            $this->whereby .= ' and '.self::sanitize(func_get_arg(0)).
+                (is_null(self::sanitize(func_get_arg(1) ))?' IS NULL':
+                ' = \''.self::sanitize(func_get_arg(1) ). '\'');
         } else {
             static::$response=QueryBuilderResponses::invalidQueryParams();
         }
@@ -191,17 +194,18 @@ class Builder extends Connect
     public function orWhere($param){
         if (func_num_args() == 3) {
 
-            $operator =strtolower(func_get_arg(1));
+            $operator =strtoupper(func_get_arg(1));
             if (is_numeric(array_search($operator, $this->condition))) {
                 $this->whereby .=' or '.self::sanitize(func_get_arg(0))
-                    .' '. $operator . ' \''
-                    . self::sanitize(func_get_arg(2)) . '\'';
+                    .' '. $operator .(is_null( self::sanitize(func_get_arg(2)))?' NULL':
+                        ' \''.self::sanitize(func_get_arg(2)) . '\'');
             } else {
                 static::$response=QueryBuilderResponses::invalidQueryCondition();
             }
         } else if (func_num_args() == 2) {
-            $this->whereby .= ' or '.self::sanitize(func_get_arg(0)) . ' = \''
-                . self::sanitize(func_get_arg(1)) . '\'';
+            $this->whereby .= ' or '.self::sanitize(func_get_arg(0)) . ' = '
+                .(is_null( self::sanitize(func_get_arg(1)) )?' IS NULL':
+                    '\''.self::sanitize(func_get_arg(1)) . '\'');
         } else {
             static::$response=QueryBuilderResponses::invalidQueryParams();
         }
