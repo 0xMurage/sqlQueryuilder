@@ -105,7 +105,7 @@ To select using where condition
   
   allowed conditions include for where clause include
    
-    < , > , <> , != , <= , >= , = 
+    < , > , <> , != , <= , >= , =, IS, IS NOT, <=> 
       
 To perform an insert 
    
